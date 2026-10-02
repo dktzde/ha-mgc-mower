@@ -5,11 +5,11 @@
 [![GitHub release](https://img.shields.io/github/v/release/MTTPoll/handwise-ha?display_name=tag)](https://github.com/MTTPoll/handwise-ha/releases)
 [![GitHub issues](https://img.shields.io/github/issues/MTTPoll/handwise-ha)](https://github.com/MTTPoll/handwise-ha/issues)
 
-**Handwise-HA** is a Home Assistant custom integration for **Handwise robotic lawn mowers**.
+**Handwise-HA** is a Home Assistant custom integration for **Handwise robotic lawn mowers** and compatible MGC-series mowers such as the **Redkey MGC1000** (R HOME app).
 
 It connects your mower to Home Assistant and provides status information, mower controls, diagnostics, battery data, mowing progress, rain detection and more through the Handwise / Anthbot cloud platform.
 
-> Currently tested with the **Handwise MGC01 500**.  
+> Currently tested with the **Handwise MGC01 500** and the **Redkey MGC1000**.  
 > Other Handwise mower models using the same cloud platform may also work.
 
 ---
@@ -53,6 +53,9 @@ Handwise-HA currently supports:
 | Brand | Model | Status |
 |---|---|---|
 | Handwise | MGC01 500 | ✅ Tested |
+| Redkey | MGC1000 (R HOME app) | ✅ Tested |
+
+The rain wait time can be set from 0 to 12 h in 0.1 h steps (the vendor apps only offer up to 3 h).
 
 ### Potentially compatible
 
@@ -61,10 +64,11 @@ This integration may also work with other Handwise robotic lawn mowers using the
 Possible candidates:
 
 - Other Handwise robotic mower models
+- Other Redkey MGC models and ANTHBOT Pion / MGC500 / MGC750 / MGC1000
 - Anthbot Genie based mower models
 - Future Handwise cloud-connected mower models
 
-If your mower works with the **Handwise** or **Anthbot** mobile app, there is a chance that it can work with this integration.
+If your mower works with the **Handwise**, **R HOME** (Redkey) or **Anthbot** mobile app, there is a chance that it can work with this integration.
 
 Please open an issue if you successfully test another model.
 
@@ -130,7 +134,7 @@ Settings → Devices & services → Add integration
 Handwise-HA
 ```
 
-4. Enter your Handwise account credentials
+4. Enter your Handwise account credentials (Redkey: your R HOME account, API host `api.anthbot.com`)
 5. Select your mower
 6. Complete setup
 
@@ -300,6 +304,9 @@ Handwise-HA unterstützt aktuell:
 | Marke | Modell | Status |
 |---|---|---|
 | Handwise | MGC01 500 | ✅ Getestet |
+| Redkey | MGC1000 (R-HOME-App) | ✅ Getestet |
+
+Die Regen-Wartezeit lässt sich von 0 bis 12 h in 0,1-h-Schritten einstellen (die Hersteller-Apps bieten nur bis 3 h).
 
 ### Wahrscheinlich kompatibel
 
@@ -308,10 +315,11 @@ Diese Integration könnte auch mit weiteren Handwise-Mährobotern funktionieren,
 Mögliche Kandidaten:
 
 - Weitere Handwise-Mähroboter
+- Weitere Redkey-MGC-Modelle sowie ANTHBOT Pion / MGC500 / MGC750 / MGC1000
 - Anthbot-Genie-basierte Mähroboter
 - Zukünftige cloudfähige Handwise-Modelle
 
-Wenn dein Mähroboter mit der **Handwise**- oder **Anthbot**-App funktioniert, besteht eine Chance, dass er auch mit dieser Integration funktioniert.
+Wenn dein Mähroboter mit der **Handwise**-, **R HOME**- (Redkey) oder **Anthbot**-App funktioniert, besteht eine Chance, dass er auch mit dieser Integration funktioniert.
 
 Bitte erstelle ein Issue, wenn du ein weiteres Modell erfolgreich getestet hast.
 
@@ -377,7 +385,7 @@ Einstellungen → Geräte & Dienste → Integration hinzufügen
 Handwise-HA
 ```
 
-4. Handwise-Zugangsdaten eingeben
+4. Handwise-Zugangsdaten eingeben (Redkey: Zugangsdaten der R-HOME-App, API-Host `api.anthbot.com`)
 5. Mähroboter auswählen
 6. Einrichtung abschließen
 
