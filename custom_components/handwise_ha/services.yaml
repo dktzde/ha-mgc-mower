@@ -169,3 +169,33 @@ start_auto_zone_mow:
       example: "YOUR_MOWER_SERIAL"
       selector:
         text:
+
+set_mowing_schedule:
+  name: Set Mowing Schedule
+  description: >-
+    Replace the weekly mowing schedule stored on the mower (same as the schedule in the
+    R HOME app). Every entry repeats weekly. An empty list clears the schedule.
+    Tested with MGC mowers (Redkey MGC1000).
+  target:
+    entity:
+      integration: handwise_ha
+  fields:
+    entries:
+      name: Entries
+      description: >-
+        List of schedule entries. Each entry has weekday (mon-sun) or weekdays (list),
+        start (HH:MM), optional end (HH:MM, empty = until finished), cutter_height
+        (30-70 mm in 5 mm steps) and direction (perpendicular, parallel or cross).
+      required: true
+      example: >-
+        [{"weekday": "mon", "start": "17:00", "end": "19:00", "cutter_height": 55,
+        "direction": "cross"}, {"weekdays": ["wed", "fri"], "start": "17:00",
+        "cutter_height": 55, "direction": "parallel"}]
+      selector:
+        object:
+    serial_number:
+      name: Serial number
+      description: Optional mower serial number or list of serial numbers.
+      example: "YOUR_MOWER_SERIAL"
+      selector:
+        text:

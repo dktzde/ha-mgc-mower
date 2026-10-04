@@ -46,6 +46,9 @@
       "mode": {
         "name": "Mode"
       },
+      "mowing_schedule": {
+        "name": "Mowing schedule"
+      },
       "error_code": {
         "name": "Error code"
       },

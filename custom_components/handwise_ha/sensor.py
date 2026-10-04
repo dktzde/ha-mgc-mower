@@ -22,6 +22,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import HandwiseGenieDataUpdateCoordinator
+from .schedule import schedule_entries, schedule_summary
 
 
 MOWER_STATUS_OPTIONS: list[str] = [
@@ -224,6 +225,14 @@ SENSORS: tuple[HandwiseSensorDescription, ...] = (
         value_fn=lambda data: data.get("mode"),
     ),
     HandwiseSensorDescription(
+        key="mowing_schedule",
+        translation_key="mowing_schedule",
+        name="Mowing schedule",
+        value_fn=lambda data: (
+            len(entries) if (entries := schedule_entries(data)) is not None else None
+        ),
+    ),
+    HandwiseSensorDescription(
         key="pin_status",
         translation_key="pin_status",
         name="PIN status",
@@ -310,6 +319,7 @@ def _sensor_path_for_description(description: HandwiseSensorDescription) -> list
         "event_code": ["event_code"],
         "ip_address": ["sta_ip_addr"],
         "mode": ["mode"],
+        "mowing_schedule": ["appointment"],
         "pin_status": ["pin_correct"],
         "rain_effect": ["rainer_effect"],
         "mow_delay_time": ["mow_delay_time"],
@@ -401,5 +411,10 @@ class HandwiseSensorEntity(
                     "curpath_decoded_bytes": _curpath_decoded_length(state),
                 }
             )
+
+        elif key == "mowing_schedule":
+            entries = schedule_entries(state) or []
+            attributes["entries"] = entries
+            attributes["summary"] = schedule_summary(entries)
 
         return attributes
