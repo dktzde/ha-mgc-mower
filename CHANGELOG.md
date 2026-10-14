@@ -16,6 +16,7 @@ First release of MGC Mower. Forked from Handwise-HA at commit `a292dbc` (2026-06
 - **Fixed:** rain detection on/off on MGC firmware (`ctl_rainer` 1/0).
 - **Added:** weekly mowing schedule: service `mgc_mower.set_mowing_schedule` and a schedule sensor.
 - **Docs:** new short README in English, French and German, Redkey and Handwise logos.
+- **Extras:** `extras/shadow_capture`, a debug patch (service `capture_shadow`) for reading the mower's cloud shadows. Not installed by HACS.
 
 ---
 

@@ -1,0 +1,171 @@
+diff --git a/custom_components/mgc_mower/__init__.py b/custom_components/mgc_mower/__init__.py
+index e6964cf..56eed72 100644
+--- a/custom_components/mgc_mower/__init__.py
++++ b/custom_components/mgc_mower/__init__.py
+@@ -486,6 +486,99 @@ async def _async_register_services(hass: HomeAssistant) -> None:
+             schema=set_mowing_schedule_schema,
+         )
+ 
++    # Debug extra (extras/shadow_capture): poll the "property" and "service" shadows
++    # quickly and log every new version as WARNING, including "desired" (the last
++    # command, e.g. sent by the R HOME app). Read-only, nothing is sent to the mower.
++    capture_schema = vol.Schema(
++        {
++            vol.Optional("duration", default=300): vol.All(
++                vol.Coerce(int), vol.Range(min=5, max=1800)
++            ),
++            vol.Optional("interval", default=0.5): vol.All(
++                vol.Coerce(float), vol.Range(min=0.2, max=10)
++            ),
++            vol.Optional(ATTR_SERIAL_NUMBER): vol.Any(cv.string, [cv.string]),
++            vol.Optional("entity_id"): vol.Any(cv.entity_id, [cv.entity_id]),
++        },
++        extra=vol.ALLOW_EXTRA,
++    )
++
++    async def _async_capture(coordinator, duration: int, interval: float) -> None:
++        client = coordinator.client
++        loop = asyncio.get_running_loop()
++        end = loop.time() + duration
++        last: dict[str, object] = {}
++        _LOGGER.warning("CAPTURE start (%s s, every %s s)", duration, interval)
++        # Once at the start: all field names of the property shadow, for orientation.
++        try:
++            first = await client._async_get_named_shadow_reported_state("property")
++            _LOGGER.warning("CAPTURE property keys=%s", sorted(first))
++        except HandwiseGenieApiError as err:
++            _LOGGER.warning("CAPTURE property error: %s", err)
++        while loop.time() < end:
++            for name in ("property", "service"):
++                try:
++                    await client._async_get_named_shadow_reported_state(name)
++                except HandwiseGenieApiError as err:
++                    _LOGGER.warning("CAPTURE %s error: %s", name, err)
++                    continue
++                payload = getattr(client, "_last_shadow_payload", {}).get(name) or {}
++                state = payload.get("state") or {}
++                reported = state.get("reported") or {}
++                # Fields watched for changes: rain settings, schedule, cutting height/direction.
++                key = (
++                    payload.get("version"),
++                    reported.get("rainer_ctl"),
++                    reported.get("mow_delay_time"),
++                    str(state.get("desired")),
++                    str(reported.get("appointment")),
++                    str(reported.get("appointment_time")),
++                    reported.get("cutter_height"),
++                    str(reported.get("cutter_direction")),
++                )
++                if last.get(name) != key:
++                    last[name] = key
++                    _LOGGER.warning(
++                        "CAPTURE %s v%s rainer_ctl=%s mow_delay_time=%s desired=%s "
++                        "delta=%s meta_desired=%s appointment=%s appointment_time=%s "
++                        "cutter_height=%s cutter_direction=%s",
++                        name,
++                        payload.get("version"),
++                        reported.get("rainer_ctl"),
++                        reported.get("mow_delay_time"),
++                        state.get("desired"),
++                        state.get("delta"),
++                        (payload.get("metadata") or {}).get("desired"),
++                        reported.get("appointment"),
++                        reported.get("appointment_time"),
++                        reported.get("cutter_height"),
++                        reported.get("cutter_direction"),
++                    )
++            await asyncio.sleep(interval)
++        _LOGGER.warning("CAPTURE end")
++
++    async def _handle_capture_shadow(service_call) -> None:
++        targets = _resolve_target_coordinators(hass, service_call.data)
++        if not targets:
++            raise HandwiseGenieApiError("No target Handwise mower found")
++        for coordinator in targets:
++            hass.async_create_background_task(
++                _async_capture(
++                    coordinator,
++                    service_call.data["duration"],
++                    service_call.data["interval"],
++                ),
++                "mgc_mower_capture_shadow",
++            )
++
++    if not hass.services.has_service(DOMAIN, "capture_shadow"):
++        hass.services.async_register(
++            DOMAIN,
++            "capture_shadow",
++            _handle_capture_shadow,
++            schema=capture_schema,
++        )
++
+ 
+ def _async_cleanup_legacy_entities(
+     hass: HomeAssistant, entry: ConfigEntry, serial_number: str
+@@ -677,6 +770,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+                 SERVICE_START_ZONE_MOW,
+                 SERVICE_START_AUTO_ZONE_MOW,
+                 SERVICE_SET_MOWING_SCHEDULE,
++                "capture_shadow",
+             ):
+                 if hass.services.has_service(DOMAIN, service_name):
+                     hass.services.async_remove(DOMAIN, service_name)
+diff --git a/custom_components/mgc_mower/api.py b/custom_components/mgc_mower/api.py
+index fb236c6..d7957da 100644
+--- a/custom_components/mgc_mower/api.py
++++ b/custom_components/mgc_mower/api.py
+@@ -767,6 +767,15 @@ class HandwiseShadowApiClient:
+         if not isinstance(payload, dict):
+             raise HandwiseGenieApiError("Invalid response payload type")
+ 
++        # Debug extra (extras/shadow_capture): full service shadow including "desired"
++        # (the last command, e.g. from the R HOME app) at debug level, and the last raw
++        # document per shadow for the capture_shadow service.
++        if shadow_name == "service":
++            _LOGGER.debug("Handwise service shadow full: %s", payload)
++        if not hasattr(self, "_last_shadow_payload"):
++            self._last_shadow_payload = {}
++        self._last_shadow_payload[shadow_name] = payload
++
+         state = payload.get("state")
+         reported = state.get("reported") if isinstance(state, dict) else None
+         if not isinstance(reported, dict):
+diff --git a/custom_components/mgc_mower/services.yaml b/custom_components/mgc_mower/services.yaml
+index c93d44c..f96badb 100644
+--- a/custom_components/mgc_mower/services.yaml
++++ b/custom_components/mgc_mower/services.yaml
+@@ -170,6 +170,34 @@ start_auto_zone_mow:
+       selector:
+         text:
+ 
++# Debug extra (extras/shadow_capture)
++capture_shadow:
++  name: Capture shadow (debug)
++  description: >-
++    Polls the property and service shadow quickly and logs every change as WARNING
++    (read-only). Use it to see which command the vendor app sends.
++  target:
++    entity:
++      integration: mgc_mower
++  fields:
++    duration:
++      name: Duration
++      description: Duration in seconds.
++      example: 300
++      selector:
++        number:
++          min: 5
++          max: 1800
++    interval:
++      name: Interval
++      description: Polling interval in seconds.
++      example: 0.5
++      selector:
++        number:
++          min: 0.2
++          max: 10
++          step: 0.1
++
+ set_mowing_schedule:
+   name: Set Mowing Schedule
+   description: >-
