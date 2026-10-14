@@ -69,6 +69,8 @@ Feedback on other models is welcome: please open an issue.
 
 Many thanks to [MTTPoll/handwise-ha](https://github.com/MTTPoll/handwise-ha). This integration is built on it. Unofficial project, not affiliated with Redkey, Handwise, Anthbot, Redroad or EZVIZ.
 
+History: [CHANGELOG](CHANGELOG.md). Up to 0.1.0 by MTTPoll, from 0.2.0 by dktzde.
+
 ---
 
 # Français
@@ -115,6 +117,8 @@ Vos retours sur d'autres modèles sont les bienvenus : ouvrez une issue.
 
 Un grand merci à [MTTPoll/handwise-ha](https://github.com/MTTPoll/handwise-ha), sur lequel repose cette intégration. Projet non officiel, sans lien avec Redkey, Handwise, Anthbot, Redroad ou EZVIZ.
 
+Historique : [CHANGELOG](CHANGELOG.md). Jusqu'à la 0.1.0 par MTTPoll, à partir de la 0.2.0 par dktzde.
+
 ---
 
 # Deutsch
@@ -160,3 +164,5 @@ Rückmeldungen zu weiteren Modellen sind willkommen, bitte als Issue.
 ## Danke
 
 Vielen Dank an [MTTPoll/handwise-ha](https://github.com/MTTPoll/handwise-ha), auf dem diese Integration aufbaut. Inoffizielles Projekt, keine Verbindung zu Redkey, Handwise, Anthbot, Redroad oder EZVIZ.
+
+Historie: [CHANGELOG](CHANGELOG.md). Bis 0.1.0 von MTTPoll, ab 0.2.0 von dktzde.
