@@ -1,10 +1,10 @@
-"""Constants for the Handwise MGC01 integration."""
+"""Constants for the MGC Mower integration."""
 
 from __future__ import annotations
 
 from datetime import timedelta
 
-DOMAIN = "handwise_ha"
+DOMAIN = "mgc_mower"
 
 CONF_API_HOST = "api_host"
 CONF_BEARER_TOKEN = "bearer_token"
@@ -13,7 +13,7 @@ CONF_PASSWORD = "password"
 CONF_AREA_CODE = "area_code"
 CONF_SCAN_INTERVAL = "scan_interval"
 
-DEFAULT_NAME = "Handwise-HA"
+DEFAULT_NAME = "MGC Mower"
 DEFAULT_API_HOST = "api.anthbot.com"
 DEFAULT_AREA_CODE = "32"
 

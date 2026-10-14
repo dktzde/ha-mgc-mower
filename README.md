@@ -1,570 +1,160 @@
-# 🌿🤖 Handwise-HA
+<p align="center">
+  <img src="custom_components/mgc_mower/brand/icon.png" alt="Handwise" height="80">
+</p>
 
-[![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Custom%20Integration-41BDF5.svg)](https://www.home-assistant.io/)
-[![GitHub release](https://img.shields.io/github/v/release/MTTPoll/handwise-ha?display_name=tag)](https://github.com/MTTPoll/handwise-ha/releases)
-[![GitHub issues](https://img.shields.io/github/issues/MTTPoll/handwise-ha)](https://github.com/MTTPoll/handwise-ha/issues)
+# MGC Mower
 
-**Handwise-HA** is a Home Assistant custom integration for **Handwise robotic lawn mowers** and compatible MGC-series mowers such as the **Redkey MGC1000** (R HOME app).
+Home Assistant integration for **MGC robotic lawn mowers** on the Anthbot cloud: **Redkey MGC1000 / MGC500, Handwise MGC500 (MGC01 500), Redroad MGC500, Anthbot Pion** and possibly **EZVIZ RM600**.
 
-It connects your mower to Home Assistant and provides status information, mower controls, diagnostics, battery data, mowing progress, rain detection and more through the Handwise / Anthbot cloud platform.
-
-> Currently tested with the **Handwise MGC01 500** and the **Redkey MGC1000**.  
-> Other Handwise mower models using the same cloud platform may also work.
-
----
-
-## Language
-
-- [English](#english)
-- [Deutsch](#deutsch)
+[English](#english) · [Français](#français) · [Deutsch](#deutsch)
 
 ---
 
 # English
 
-## ✨ Features
+## Installation
 
-Handwise-HA currently supports:
+**HACS (custom repository):** HACS → ⋮ → *Custom repositories* → add `https://github.com/dktzde/ha-mgc-mower`, category *Integration* → download → restart Home Assistant.
 
-- 🌿 Native Home Assistant lawn mower entity
-- ▶️ Start mowing
-- ⏸️ Pause mowing
-- 🏠 Return to charging station
-- 🔋 Battery level
-- 📡 Connection status
-- 🔌 Charging status
-- 📊 Mowing progress
-- 📐 Mowed area
-- ✂️ Cutting height
-- 📶 Wi-Fi signal strength
-- ⚠️ Error code reporting
-- 🌧️ Rain detection
-- 🔐 PIN / lock status
-- 🧪 Diagnostic sensors
-- 🗺️ Current path diagnostic data
+**Manual:** copy `custom_components/mgc_mower` to `config/custom_components/mgc_mower` and restart.
 
----
+Then: *Settings → Devices & services → Add integration → MGC Mower* and sign in with your app account (Redkey: R HOME account, API host `api.anthbot.com`).
 
-## ✅ Supported Models
+> Coming from Handwise-HA? Remove it first, otherwise the mower shows up twice.
 
-### Confirmed working
+## Why this fork?
 
-| Brand | Model | Status |
-|---|---|---|
-| Handwise | MGC01 500 | ✅ Tested |
-| Redkey | MGC1000 (R HOME app) | ✅ Tested |
+[Handwise-HA](https://github.com/MTTPoll/handwise-ha) did not write the rain wait time correctly on MGC mowers. This fork fixes that and adds the weekly mowing schedule.
 
-The rain wait time can be set from 0 to 12 h in 0.1 h steps (the vendor apps only offer up to 3 h).
+**Works**
+- Rain wait time is written correctly (0–12 h in 0.1 h steps; the app only offers 1–3 h)
+- Rain detection on/off
+- Writing the weekly mowing schedule (`mgc_mower.set_mowing_schedule`)
+- Everything from Handwise-HA: start, pause, dock, battery, status, progress, cutting height, zones, diagnostics …
 
-### Potentially compatible
-
-This integration may also work with other Handwise robotic lawn mowers using the same Handwise / Anthbot cloud platform.
-
-Possible candidates:
-
-- Other Handwise robotic mower models
-- Other Redkey MGC models and ANTHBOT Pion / MGC500 / MGC750 / MGC1000
-- Anthbot Genie based mower models
-- Future Handwise cloud-connected mower models
-
-If your mower works with the **Handwise**, **R HOME** (Redkey) or **Anthbot** mobile app, there is a chance that it can work with this integration.
-
-Please open an issue if you successfully test another model.
-
----
-
-## 📦 Installation
-
-### HACS installation
-
-1. Open **HACS**
-2. Go to **Integrations**
-3. Open the menu in the top right corner
-4. Select **Custom repositories**
-5. Add this repository URL:
-
-```text
-https://github.com/MTTPoll/handwise-ha
-```
-
-6. Select category:
-
-```text
-Integration
-```
-
-7. Install **Handwise-HA**
-8. Restart Home Assistant
-
----
-
-### Manual installation
-
-Copy this folder:
-
-```text
-custom_components/handwise_ha
-```
-
-to your Home Assistant configuration directory:
-
-```text
-config/custom_components/handwise_ha
-```
-
-Then restart Home Assistant.
-
----
-
-## ⚙️ Configuration
-
-After installation:
-
-1. Open Home Assistant
-2. Go to:
-
-```text
-Settings → Devices & services → Add integration
-```
-
-3. Search for:
-
-```text
-Handwise-HA
-```
-
-4. Enter your Handwise account credentials (Redkey: your R HOME account, API host `api.anthbot.com`)
-5. Select your mower
-6. Complete setup
-
----
-
-## 🧩 Available Entities
-
-The exact entities can differ depending on the mower model and firmware.
-
-### Lawn mower
-
-- Lawn mower control entity
-- Start mowing
-- Pause mowing
-- Return to charging station
-
-### Sensors
-
-- Battery level
-- Mower status
-- Mowing progress
-- Mowed area
-- Cutting height
-- Wi-Fi signal
-- Error code
-- Event code
-- IP address
-- PIN status
-- Rain effect
-- Rain wait time
-- Firmware information
-- Current path diagnostic data
-- Mowing schedule (number of entries; attributes `entries` and `summary` show the weekly schedule stored on the mower)
-
-### Binary sensors
-
-- Connection
-- Charging
-- Rain detection
-- Error state
-- Safety trigger
-
-### Controls
-
-- Cutting height
-- Rain detection
-- Rain wait time
-
-### Weekly mowing schedule
-
-The service `handwise_ha.set_mowing_schedule` replaces the weekly schedule stored on the mower, the same schedule the R HOME app shows. The mower keeps it and mows on its own, also when Home Assistant is offline. Every entry repeats weekly and has one weekday, a start time, an optional end time (empty = until finished), the cutting height and the mowing direction (`perpendicular`, `parallel` or `cross`). An empty list clears the schedule.
+**To do**
+- The message centre can't be read yet
 
 ```yaml
-action: handwise_ha.set_mowing_schedule
+action: mgc_mower.set_mowing_schedule
 target:
   entity_id: lawn_mower.your_mower
 data:
   entries:
-    - weekday: mon
+    - weekdays: [mon, wed, fri]
       start: "17:00"
-      end: "19:00"
-      cutter_height: 55
-      direction: cross
-    - weekdays: [wed, fri]
-      start: "17:00"
-      cutter_height: 55
-      direction: parallel
+      end: "19:00"        # optional, empty = until finished
+      cutter_height: 55   # 30–70 mm
+      direction: cross    # perpendicular | parallel | cross
 ```
 
-Tested with a Redkey MGC1000; the command format was taken from the R HOME app. The app always sends the complete list, so a change made in the app replaces the schedule set from Home Assistant and vice versa.
+The app always sends the complete schedule, so a change in the app overwrites the one from Home Assistant and vice versa.
+
+## Models
+
+| Model | Status |
+|---|---|
+| Redkey MGC1000 | ✅ tested (this fork) |
+| Handwise MGC500 (MGC01 500) | ✅ tested (upstream) |
+| Redkey MGC500, Redroad MGC500, Anthbot Pion | ❔ largely identical hardware, should work |
+| EZVIZ RM600 | ⚠️ largely identical hardware, but **may use a different cloud** |
+
+Feedback on other models is welcome: please open an issue.
+
+> ⚠️ **Caution:** my mower is already in winter hibernation. The changes have only been tested briefly.
+
+## Thanks
+
+Many thanks to [MTTPoll/handwise-ha](https://github.com/MTTPoll/handwise-ha). This integration is built on it. Unofficial project, not affiliated with Redkey, Handwise, Anthbot, Redroad or EZVIZ.
 
 ---
 
-## 🧪 Diagnostics
+# Français
 
-Handwise-HA includes diagnostic entities that can help with troubleshooting and future development.
+## Installation
 
-Examples:
+**HACS (dépôt personnalisé) :** HACS → ⋮ → *Dépôts personnalisés* → ajouter `https://github.com/dktzde/ha-mgc-mower`, catégorie *Intégration* → télécharger → redémarrer Home Assistant.
 
-- Error code
-- Event code
-- Wi-Fi signal
-- Firmware versions
-- Current path data
-- Internal mower status
+**Manuelle :** copier `custom_components/mgc_mower` dans `config/custom_components/mgc_mower` et redémarrer.
 
-The current path data is currently exposed for diagnostics only. Map or route visualization may be added later.
+Ensuite : *Paramètres → Appareils et services → Ajouter une intégration → MGC Mower* et se connecter avec le compte de l'application (Redkey : compte R HOME, hôte API `api.anthbot.com`).
 
----
+> Vous utilisiez Handwise-HA ? Supprimez-la d'abord, sinon la tondeuse apparaît deux fois.
 
-## 🏡 Dashboard ideas
+## Pourquoi ce fork ?
 
-Handwise-HA works with normal Home Assistant dashboard cards.
+[Handwise-HA](https://github.com/MTTPoll/handwise-ha) n'écrivait pas correctement le délai d'attente après la pluie sur les tondeuses MGC. Ce fork corrige ce problème et ajoute le planning de tonte hebdomadaire.
 
-Recommended cards:
+**Fonctionne**
+- Délai d'attente après la pluie écrit correctement (0–12 h par pas de 0,1 h ; l'application ne propose que 1–3 h)
+- Détection de pluie activée/désactivée
+- Écriture du planning de tonte hebdomadaire (`mgc_mower.set_mowing_schedule`, exemple voir [English](#english))
+- Tout ce que fait Handwise-HA : démarrage, pause, retour à la base, batterie, état, progression, hauteur de coupe, zones, diagnostic …
 
-- Tile Card
-- Entities Card
-- Mushroom Cards
-- Custom dashboard cards
+**À faire**
+- Le centre de messages ne peut pas encore être lu
 
-Example dashboard values:
+L'application envoie toujours le planning complet : une modification dans l'application remplace celle de Home Assistant et inversement.
 
-```text
-Status: Charging
-Battery: 100 %
-Mowing progress: 74 %
-Mowed area: 160 m²
-Cutting height: 40 mm
-Wi-Fi signal: -74 dBm
-```
+## Modèles
 
----
+| Modèle | Statut |
+|---|---|
+| Redkey MGC1000 | ✅ testé (ce fork) |
+| Handwise MGC500 (MGC01 500) | ✅ testé (upstream) |
+| Redkey MGC500, Redroad MGC500, Anthbot Pion | ❔ matériel très similaire, devrait fonctionner |
+| EZVIZ RM600 | ⚠️ matériel très similaire, mais **utilise peut-être un autre cloud** |
 
-## 🛣️ Roadmap
+Vos retours sur d'autres modèles sont les bienvenus : ouvrez une issue.
 
-Planned or possible improvements:
+> ⚠️ **Attention :** ma tondeuse est déjà en hivernage. Les modifications n'ont été testées que brièvement.
 
-- Better error code descriptions
-- Improved diagnostics
-- More confirmed Handwise models
-- Optional path / route visualization
-- Better translations
-- More automation examples
-- Enhanced HACS release structure
+## Remerciements
 
----
-
-## 🤝 Contributing
-
-Contributions are welcome.
-
-You can help by:
-
-- Testing additional Handwise mower models
-- Reporting bugs
-- Sharing diagnostic data
-- Improving translations
-- Creating pull requests
-- Opening feature requests
-
-If you test another model, please include:
-
-- Mower model
-- Firmware version if available
-- Working entities
-- Non-working entities
-- Relevant Home Assistant logs
-
----
-
-## ⚠️ Disclaimer
-
-Handwise-HA is an independent community project.
-
-This project is not affiliated with, endorsed by, maintained by, or supported by Handwise or Anthbot.
-
-Use this integration at your own risk.
+Un grand merci à [MTTPoll/handwise-ha](https://github.com/MTTPoll/handwise-ha), sur lequel repose cette intégration. Projet non officiel, sans lien avec Redkey, Handwise, Anthbot, Redroad ou EZVIZ.
 
 ---
 
 # Deutsch
 
-## ✨ Funktionen
+## Installation
 
-Handwise-HA unterstützt aktuell:
+**HACS (benutzerdefiniertes Repository):** HACS → ⋮ → *Benutzerdefinierte Repositories* → `https://github.com/dktzde/ha-mgc-mower` hinzufügen, Kategorie *Integration* → herunterladen → Home Assistant neu starten.
 
-- 🌿 Native Home-Assistant-Mähroboter-Entität
-- ▶️ Mähen starten
-- ⏸️ Mähen pausieren
-- 🏠 Zur Ladestation zurückkehren
-- 🔋 Akkustand
-- 📡 Verbindungsstatus
-- 🔌 Ladezustand
-- 📊 Mähfortschritt
-- 📐 Gemähte Fläche
-- ✂️ Schnitthöhe
-- 📶 WLAN-Signalstärke
-- ⚠️ Fehlercode
-- 🌧️ Regenerkennung
-- 🔐 PIN-/Sperrstatus
-- 🧪 Diagnose-Sensoren
-- 🗺️ Aktuelle Pfaddaten als Diagnosewert
+**Manuell:** `custom_components/mgc_mower` nach `config/custom_components/mgc_mower` kopieren und neu starten.
 
----
+Danach: *Einstellungen → Geräte & Dienste → Integration hinzufügen → MGC Mower* und mit dem App-Konto anmelden (Redkey: R-HOME-Konto, API-Host `api.anthbot.com`).
 
-## ✅ Unterstützte Modelle
+> Du nutzt bisher Handwise-HA? Entferne es vorher, sonst erscheint der Mäher doppelt.
 
-### Erfolgreich getestet
+## Warum dieser Fork?
 
-| Marke | Modell | Status |
-|---|---|---|
-| Handwise | MGC01 500 | ✅ Getestet |
-| Redkey | MGC1000 (R-HOME-App) | ✅ Getestet |
+[Handwise-HA](https://github.com/MTTPoll/handwise-ha) hat bei MGC-Mähern die Regen-Wartezeit nicht richtig geschrieben. Dieser Fork behebt das und ergänzt den Wochen-Mähplan.
 
-Die Regen-Wartezeit lässt sich von 0 bis 12 h in 0,1-h-Schritten einstellen (die Hersteller-Apps bieten nur bis 3 h).
+**Funktioniert**
+- Regen-Wartezeit wird korrekt geschrieben (0–12 h in 0,1-h-Schritten; die App bietet nur 1–3 h)
+- Regenerkennung ein/aus
+- Wochen-Mähplan schreiben (`mgc_mower.set_mowing_schedule`, Beispiel siehe [English](#english))
+- Alles aus Handwise-HA: Start, Pause, Zurück zur Station, Akku, Status, Fortschritt, Schnitthöhe, Zonen, Diagnose …
 
-### Wahrscheinlich kompatibel
+**Noch offen**
+- Das Message Center kann noch nicht ausgelesen werden
 
-Diese Integration könnte auch mit weiteren Handwise-Mährobotern funktionieren, die dieselbe Handwise-/Anthbot-Cloud-Plattform verwenden.
+Die App schickt immer den kompletten Plan. Eine Änderung in der App überschreibt deshalb den Plan aus Home Assistant und umgekehrt.
 
-Mögliche Kandidaten:
+## Modelle
 
-- Weitere Handwise-Mähroboter
-- Weitere Redkey-MGC-Modelle sowie ANTHBOT Pion / MGC500 / MGC750 / MGC1000
-- Anthbot-Genie-basierte Mähroboter
-- Zukünftige cloudfähige Handwise-Modelle
+| Modell | Status |
+|---|---|
+| Redkey MGC1000 | ✅ getestet (dieser Fork) |
+| Handwise MGC500 (MGC01 500) | ✅ getestet (Upstream) |
+| Redkey MGC500, Redroad MGC500, Anthbot Pion | ❔ weitgehend baugleich, sollte funktionieren |
+| EZVIZ RM600 | ⚠️ weitgehend baugleich, nutzt aber **eventuell eine andere Cloud** |
 
-Wenn dein Mähroboter mit der **Handwise**-, **R HOME**- (Redkey) oder **Anthbot**-App funktioniert, besteht eine Chance, dass er auch mit dieser Integration funktioniert.
+Rückmeldungen zu weiteren Modellen sind willkommen, bitte als Issue.
 
-Bitte erstelle ein Issue, wenn du ein weiteres Modell erfolgreich getestet hast.
+> ⚠️ **Achtung:** Mein Mäher ist schon im Winterschlaf. Die Änderungen wurden nur kurz getestet.
 
----
+## Danke
 
-## 📦 Installation
-
-### Installation über HACS
-
-1. **HACS** öffnen
-2. Zu **Integrationen** wechseln
-3. Oben rechts das Menü öffnen
-4. **Benutzerdefinierte Repositories** auswählen
-5. Diese Repository-URL eintragen:
-
-```text
-https://github.com/MTTPoll/handwise-ha
-```
-
-6. Kategorie auswählen:
-
-```text
-Integration
-```
-
-7. **Handwise-HA** installieren
-8. Home Assistant neu starten
-
----
-
-### Manuelle Installation
-
-Diesen Ordner kopieren:
-
-```text
-custom_components/handwise_ha
-```
-
-nach:
-
-```text
-config/custom_components/handwise_ha
-```
-
-Danach Home Assistant neu starten.
-
----
-
-## ⚙️ Einrichtung
-
-Nach der Installation:
-
-1. Home Assistant öffnen
-2. Zu folgendem Menü wechseln:
-
-```text
-Einstellungen → Geräte & Dienste → Integration hinzufügen
-```
-
-3. Nach folgender Integration suchen:
-
-```text
-Handwise-HA
-```
-
-4. Handwise-Zugangsdaten eingeben (Redkey: Zugangsdaten der R-HOME-App, API-Host `api.anthbot.com`)
-5. Mähroboter auswählen
-6. Einrichtung abschließen
-
----
-
-## 🧩 Verfügbare Entitäten
-
-Die tatsächlich verfügbaren Entitäten können je nach Modell und Firmware abweichen.
-
-### Mähroboter
-
-- Mähroboter-Steuerung
-- Mähen starten
-- Mähen pausieren
-- Zur Ladestation zurückkehren
-
-### Sensoren
-
-- Akkustand
-- Mäherstatus
-- Mähfortschritt
-- Gemähte Fläche
-- Schnitthöhe
-- WLAN-Signal
-- Fehlercode
-- Ereigniscode
-- IP-Adresse
-- PIN-Status
-- Regenstatus
-- Regen-Wartezeit
-- Firmware-Informationen
-- Aktuelle Pfaddaten als Diagnosewert
-- Mähplan (Anzahl der Einträge; die Attribute `entries` und `summary` zeigen den im Mäher gespeicherten Wochenplan)
-
-### Binärsensoren
-
-- Verbindung
-- Ladevorgang
-- Regenerkennung
-- Fehlerstatus
-- Sicherheitsauslösung
-
-### Steuerungen
-
-- Schnitthöhe
-- Regenerkennung
-- Regen-Wartezeit
-
-### Wöchentlicher Mähplan
-
-Der Dienst `handwise_ha.set_mowing_schedule` ersetzt den im Mäher gespeicherten Wochenplan. Das ist derselbe Plan, den die R-HOME-App zeigt. Der Mäher speichert ihn selbst und mäht danach eigenständig, auch wenn Home Assistant nicht läuft. Jeder Eintrag wiederholt sich wöchentlich. Er hat einen Wochentag, eine Startzeit, optional eine Endzeit (leer = bis fertig), die Schnitthöhe und die Mährichtung (`perpendicular`, `parallel` oder `cross`). Eine leere Liste löscht den Plan.
-
-```yaml
-action: handwise_ha.set_mowing_schedule
-target:
-  entity_id: lawn_mower.dein_maeher
-data:
-  entries:
-    - weekday: mon
-      start: "17:00"
-      end: "19:00"
-      cutter_height: 55
-      direction: cross
-    - weekdays: [wed, fri]
-      start: "17:00"
-      cutter_height: 55
-      direction: parallel
-```
-
-Getestet mit einem Redkey MGC1000; das Befehlsformat stammt aus der R-HOME-App. Die App schickt immer die komplette Liste. Eine Änderung in der App ersetzt deshalb den Plan aus Home Assistant und umgekehrt.
-
----
-
-## 🧪 Diagnose
-
-Handwise-HA enthält zusätzliche Diagnose-Entitäten, die bei Fehlersuche und Weiterentwicklung helfen können.
-
-Beispiele:
-
-- Fehlercode
-- Ereigniscode
-- WLAN-Signal
-- Firmware-Versionen
-- Aktuelle Pfaddaten
-- Interner Mäherstatus
-
-Die aktuellen Pfaddaten werden momentan nur als Diagnosewert bereitgestellt. Eine Karten- oder Routenanzeige kann später ergänzt werden.
-
----
-
-## 🏡 Dashboard-Ideen
-
-Handwise-HA funktioniert mit normalen Home-Assistant-Dashboard-Karten.
-
-Empfohlene Karten:
-
-- Kachelkarte
-- Entitäten-Karte
-- Mushroom Cards
-- Eigene Dashboard-Karten
-
-Beispielwerte im Dashboard:
-
-```text
-Status: Laden
-Akku: 100 %
-Mähfortschritt: 74 %
-Gemähte Fläche: 160 m²
-Schnitthöhe: 40 mm
-WLAN-Signal: -74 dBm
-```
-
----
-
-## 🛣️ Roadmap
-
-Geplante oder mögliche Verbesserungen:
-
-- Bessere Beschreibung der Fehlercodes
-- Erweiterte Diagnosefunktionen
-- Weitere bestätigte Handwise-Modelle
-- Optionale Pfad-/Routenanzeige
-- Bessere Übersetzungen
-- Mehr Automationsbeispiele
-- Verbesserte HACS-Release-Struktur
-
----
-
-## 🤝 Mitwirken
-
-Beiträge sind willkommen.
-
-Du kannst helfen durch:
-
-- Tests mit weiteren Handwise-Modellen
-- Fehlermeldungen
-- Teilen von Diagnoseinformationen
-- Verbesserung von Übersetzungen
-- Pull Requests
-- Feature-Wünsche
-
-Wenn du ein weiteres Modell testest, gib bitte möglichst Folgendes an:
-
-- Mähermodell
-- Firmware-Version, falls verfügbar
-- Funktionierende Entitäten
-- Nicht funktionierende Entitäten
-- Relevante Home-Assistant-Logs
-
----
-
-## ⚠️ Haftungsausschluss
-
-Handwise-HA ist ein unabhängiges Community-Projekt.
-
-Dieses Projekt steht in keiner Verbindung zu Handwise oder Anthbot und wird weder von Handwise noch von Anthbot unterstützt, gepflegt oder empfohlen.
-
-Die Nutzung erfolgt auf eigene Verantwortung.
+Vielen Dank an [MTTPoll/handwise-ha](https://github.com/MTTPoll/handwise-ha), auf dem diese Integration aufbaut. Inoffizielles Projekt, keine Verbindung zu Redkey, Handwise, Anthbot, Redroad oder EZVIZ.

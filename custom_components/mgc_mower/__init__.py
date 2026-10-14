@@ -1,4 +1,4 @@
-"""Handwise-HA integration for Handwise/Handwise MGC01 mowers."""
+"""MGC Mower integration for Anthbot-platform MGC robotic mowers (Redkey, Handwise, Anthbot)."""
 
 from __future__ import annotations
 
