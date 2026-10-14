@@ -1,10 +1,10 @@
-"""Constants for the Handwise MGC01 integration."""
+"""Constants for the MGC Mower integration."""
 
 from __future__ import annotations
 
 from datetime import timedelta
 
-DOMAIN = "handwise_ha"
+DOMAIN = "mgc_mower"
 
 CONF_API_HOST = "api_host"
 CONF_BEARER_TOKEN = "bearer_token"
@@ -13,7 +13,7 @@ CONF_PASSWORD = "password"
 CONF_AREA_CODE = "area_code"
 CONF_SCAN_INTERVAL = "scan_interval"
 
-DEFAULT_NAME = "Handwise-HA"
+DEFAULT_NAME = "MGC Mower"
 DEFAULT_API_HOST = "api.anthbot.com"
 DEFAULT_AREA_CODE = "32"
 
@@ -29,6 +29,7 @@ SERVICE_SET_VOICE_VOLUME = "set_voice_volume"
 SERVICE_SET_CUSTOM_MOWING_DIRECTION = "set_custom_mowing_direction"
 SERVICE_START_ZONE_MOW = "start_zone_mow"
 SERVICE_START_AUTO_ZONE_MOW = "start_auto_zone_mow"
+SERVICE_SET_MOWING_SCHEDULE = "set_mowing_schedule"
 
 ATTR_SERIAL_NUMBER = "serial_number"
 ATTR_MOW_HEIGHT = "mow_height"
@@ -37,6 +38,7 @@ ATTR_MOW_DIRECTION = "mow_direction"
 ATTR_ENABLE_CUSTOM_DIRECTION = "enable_custom_direction"
 ATTR_ZONES = "zones"
 ATTR_AUTO_ZONES = "auto_zones"
+ATTR_SCHEDULE_ENTRIES = "entries"
 
 # Defaults embedded in Handwise mobile app auth flow.
 DEFAULT_IOT_REGION = "us-east-1"

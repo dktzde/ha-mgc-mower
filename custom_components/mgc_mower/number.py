@@ -22,6 +22,10 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 from .coordinator import HandwiseGenieDataUpdateCoordinator
 
+# The vendor app only offers off/1/2/3 h, but the MGC firmware accepts any number
+# of minutes via "mow_delay" (verified with 162 and 720 minutes on a Redkey MGC1000).
+MAX_RAIN_WAIT_HOURS = 12
+
 
 @dataclass(frozen=True, kw_only=True)
 class HandwiseNumberDescription(NumberEntityDescription):
@@ -47,8 +51,8 @@ NUMBERS: tuple[HandwiseNumberDescription, ...] = (
         translation_key="rain_wait_time_setting",
         name="Rain wait time",
         native_min_value=0,
-        native_max_value=8,
-        native_step=1,
+        native_max_value=MAX_RAIN_WAIT_HOURS,
+        native_step=0.1,
         native_unit_of_measurement=UnitOfTime.HOURS,
         mode=NumberMode.SLIDER,
         getter=lambda data: (
@@ -130,15 +134,15 @@ class HandwiseNumberEntity(
             )
 
         elif key == "rain_wait_time_setting":
-            if int_value < 0 or int_value > 8:
-                raise ValueError("Rain wait time must be 0..8 hours")
-            rain_enabled = 1 if self.coordinator.reported_state.get("rainer_ctl") in (1, True, "1") else 0
+            if value < 0 or value > MAX_RAIN_WAIT_HOURS:
+                raise ValueError(
+                    f"Rain wait time must be 0..{MAX_RAIN_WAIT_HOURS} hours"
+                )
+            # MGC firmware: "mow_delay" with the wait time in minutes (as sent by
+            # the vendor app). Reported back as "mow_delay_time" (minutes).
             await self.coordinator.client.async_publish_service_command(
-                cmd="ctl_rainer",
-                data={
-                    "switch": rain_enabled,
-                    "continue_time": int_value * 3600,
-                },
+                cmd="mow_delay",
+                data=int(round(value * 60)),
             )
 
         await self.coordinator.client.async_request_all_properties()

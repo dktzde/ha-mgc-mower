@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Handwise-HA",
+        "title": "MGC Mower",
         "description": "Configure your Handwise / Anthbot cloud account for MGC01 mowers.",
         "data": {
           "name": "Name",
@@ -45,6 +45,9 @@
       },
       "mode": {
         "name": "Mode"
+      },
+      "mowing_schedule": {
+        "name": "Mowing schedule"
       },
       "error_code": {
         "name": "Error code"

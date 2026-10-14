@@ -1,7 +1,7 @@
 {
-  "name": "Handwise-HA",
+  "name": "MGC Mower (Redkey, Handwise, Anthbot)",
   "domains": [
-    "handwise_ha"
+    "mgc_mower"
   ],
   "homeassistant": "2025.1.0",
   "render_readme": true

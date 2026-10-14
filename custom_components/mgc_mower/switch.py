@@ -94,15 +94,11 @@ class HandwiseSwitchEntity(
     async def async_turn_on(self, **kwargs) -> None:
         """Turn switch on."""
         if self.entity_description.key == "rain_detection_enabled":
-            continue_time = self.coordinator.reported_state.get("mow_delay_time")
-            if not isinstance(continue_time, int) or continue_time <= 0:
-                continue_time = 180
+            # MGC firmware expects a plain 1/0 here (as sent by the vendor app).
+            # The Genie-style object {"switch", "continue_time"} turns rain detection off.
             await self.coordinator.client.async_publish_service_command(
                 cmd="ctl_rainer",
-                data={
-                    "switch": 1,
-                    "continue_time": continue_time * 60,
-                },
+                data=1,
             )
         await self.coordinator.client.async_request_all_properties()
         await asyncio.sleep(1)
@@ -111,15 +107,9 @@ class HandwiseSwitchEntity(
     async def async_turn_off(self, **kwargs) -> None:
         """Turn switch off."""
         if self.entity_description.key == "rain_detection_enabled":
-            continue_time = self.coordinator.reported_state.get("mow_delay_time")
-            if not isinstance(continue_time, int) or continue_time <= 0:
-                continue_time = 180
             await self.coordinator.client.async_publish_service_command(
                 cmd="ctl_rainer",
-                data={
-                    "switch": 0,
-                    "continue_time": continue_time * 60,
-                },
+                data=0,
             )
         await self.coordinator.client.async_request_all_properties()
         await asyncio.sleep(1)

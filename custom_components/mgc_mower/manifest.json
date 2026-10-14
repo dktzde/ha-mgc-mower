@@ -1,0 +1,12 @@
+{
+  "domain": "mgc_mower",
+  "name": "MGC Mower",
+  "codeowners": ["@dktzde"],
+  "config_flow": true,
+  "documentation": "https://github.com/dktzde/ha-mgc-mower",
+  "issue_tracker": "https://github.com/dktzde/ha-mgc-mower/issues",
+  "iot_class": "cloud_polling",
+  "integration_type": "hub",
+  "requirements": [],
+  "version": "0.2.0"
+}

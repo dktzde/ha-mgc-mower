@@ -1,4 +1,4 @@
-"""Handwise-HA integration for Handwise/Handwise MGC01 mowers."""
+"""MGC Mower integration for Anthbot-platform MGC robotic mowers (Redkey, Handwise, Anthbot)."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryNotReady, ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers import entity_registry as er
@@ -21,6 +21,7 @@ from .const import (
     ATTR_ENABLE_CUSTOM_DIRECTION,
     ATTR_MOW_DIRECTION,
     ATTR_MOW_HEIGHT,
+    ATTR_SCHEDULE_ENTRIES,
     ATTR_SERIAL_NUMBER,
     ATTR_VOICE_VOLUME,
     ATTR_ZONES,
@@ -37,12 +38,20 @@ from .const import (
     SERVICE_START_AUTO_ZONE_MOW,
     SERVICE_SET_CUSTOM_MOWING_DIRECTION,
     SERVICE_SET_MOW_HEIGHT,
+    SERVICE_SET_MOWING_SCHEDULE,
     SERVICE_SET_VOICE_VOLUME,
     SERVICE_START_FULL_MOW,
     SERVICE_START_ZONE_MOW,
     SERVICE_STOP_MOW,
 )
 from .coordinator import HandwiseGenieDataUpdateCoordinator
+from .schedule import (
+    DIRECTIONS,
+    MAX_CUTTER_HEIGHT,
+    MIN_CUTTER_HEIGHT,
+    WEEKDAYS,
+    build_schedule_command,
+)
 from .zones import auto_zones, manual_zones
 
 PLATFORMS = [
@@ -253,6 +262,30 @@ async def _async_register_services(hass: HomeAssistant) -> None:
         },
         extra=vol.ALLOW_EXTRA,
     )
+    schedule_entry_schema = vol.Schema(
+        {
+            vol.Exclusive("weekday", "weekdays"): vol.In(WEEKDAYS),
+            vol.Exclusive("weekdays", "weekdays"): vol.All(
+                cv.ensure_list, [vol.In(WEEKDAYS)]
+            ),
+            vol.Required("start"): cv.time,
+            vol.Optional("end"): vol.Any(None, "", cv.time),
+            vol.Required("cutter_height"): vol.All(
+                vol.Coerce(int), vol.Range(min=MIN_CUTTER_HEIGHT, max=MAX_CUTTER_HEIGHT)
+            ),
+            vol.Optional("direction", default="perpendicular"): vol.In(DIRECTIONS),
+        }
+    )
+    set_mowing_schedule_schema = vol.Schema(
+        {
+            vol.Required(ATTR_SCHEDULE_ENTRIES): vol.All(
+                cv.ensure_list, [schedule_entry_schema]
+            ),
+            vol.Optional(ATTR_SERIAL_NUMBER): vol.Any(cv.string, [cv.string]),
+            vol.Optional("entity_id"): vol.Any(cv.entity_id, [cv.entity_id]),
+        },
+        extra=vol.ALLOW_EXTRA,
+    )
     auto_zone_schema = vol.Schema(
         {
             vol.Required(ATTR_AUTO_ZONES): vol.Any(
@@ -336,6 +369,25 @@ async def _async_register_services(hass: HomeAssistant) -> None:
                     "mow_head": mow_direction,
                     "enable_adaptive_head": 0 if enable_custom_direction else 1,
                 },
+            )
+            await _async_sync_after_command(coordinator)
+
+    async def _handle_set_mowing_schedule(service_call) -> None:
+        """Replace the weekly schedule stored on the mower (R HOME app format)."""
+        targets = _resolve_target_coordinators(hass, service_call.data)
+        if not targets:
+            raise HandwiseGenieApiError("No target Handwise mower found")
+        entries = [
+            {**entry, "end": entry.get("end") or None}
+            for entry in service_call.data[ATTR_SCHEDULE_ENTRIES]
+        ]
+        try:
+            data = build_schedule_command(entries)
+        except ValueError as err:
+            raise ServiceValidationError(str(err)) from err
+        for coordinator in targets:
+            await coordinator.client.async_publish_service_command(
+                cmd="mow_regular", data=data
             )
             await _async_sync_after_command(coordinator)
 
@@ -425,6 +477,13 @@ async def _async_register_services(hass: HomeAssistant) -> None:
             SERVICE_START_AUTO_ZONE_MOW,
             _handle_start_auto_zone_mow,
             schema=auto_zone_schema,
+        )
+    if not hass.services.has_service(DOMAIN, SERVICE_SET_MOWING_SCHEDULE):
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_SET_MOWING_SCHEDULE,
+            _handle_set_mowing_schedule,
+            schema=set_mowing_schedule_schema,
         )
 
 
@@ -617,6 +676,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 SERVICE_SET_CUSTOM_MOWING_DIRECTION,
                 SERVICE_START_ZONE_MOW,
                 SERVICE_START_AUTO_ZONE_MOW,
+                SERVICE_SET_MOWING_SCHEDULE,
             ):
                 if hass.services.has_service(DOMAIN, service_name):
                     hass.services.async_remove(DOMAIN, service_name)
