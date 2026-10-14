@@ -46,6 +46,9 @@
       "mode": {
         "name": "Modus"
       },
+      "mowing_schedule": {
+        "name": "Mähplan"
+      },
       "error_code": {
         "name": "Fehlercode"
       },

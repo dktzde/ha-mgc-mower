@@ -167,6 +167,7 @@ The exact entities can differ depending on the mower model and firmware.
 - Rain wait time
 - Firmware information
 - Current path diagnostic data
+- Mowing schedule (number of entries; attributes `entries` and `summary` show the weekly schedule stored on the mower)
 
 ### Binary sensors
 
@@ -181,6 +182,29 @@ The exact entities can differ depending on the mower model and firmware.
 - Cutting height
 - Rain detection
 - Rain wait time
+
+### Weekly mowing schedule
+
+The service `handwise_ha.set_mowing_schedule` replaces the weekly schedule stored on the mower, the same schedule the R HOME app shows. The mower keeps it and mows on its own, also when Home Assistant is offline. Every entry repeats weekly and has one weekday, a start time, an optional end time (empty = until finished), the cutting height and the mowing direction (`perpendicular`, `parallel` or `cross`). An empty list clears the schedule.
+
+```yaml
+action: handwise_ha.set_mowing_schedule
+target:
+  entity_id: lawn_mower.your_mower
+data:
+  entries:
+    - weekday: mon
+      start: "17:00"
+      end: "19:00"
+      cutter_height: 55
+      direction: cross
+    - weekdays: [wed, fri]
+      start: "17:00"
+      cutter_height: 55
+      direction: parallel
+```
+
+Tested with a Redkey MGC1000; the command format was taken from the R HOME app. The app always sends the complete list, so a change made in the app replaces the schedule set from Home Assistant and vice versa.
 
 ---
 
@@ -418,6 +442,7 @@ Die tatsächlich verfügbaren Entitäten können je nach Modell und Firmware abw
 - Regen-Wartezeit
 - Firmware-Informationen
 - Aktuelle Pfaddaten als Diagnosewert
+- Mähplan (Anzahl der Einträge; die Attribute `entries` und `summary` zeigen den im Mäher gespeicherten Wochenplan)
 
 ### Binärsensoren
 
@@ -432,6 +457,29 @@ Die tatsächlich verfügbaren Entitäten können je nach Modell und Firmware abw
 - Schnitthöhe
 - Regenerkennung
 - Regen-Wartezeit
+
+### Wöchentlicher Mähplan
+
+Der Dienst `handwise_ha.set_mowing_schedule` ersetzt den im Mäher gespeicherten Wochenplan. Das ist derselbe Plan, den die R-HOME-App zeigt. Der Mäher speichert ihn selbst und mäht danach eigenständig, auch wenn Home Assistant nicht läuft. Jeder Eintrag wiederholt sich wöchentlich. Er hat einen Wochentag, eine Startzeit, optional eine Endzeit (leer = bis fertig), die Schnitthöhe und die Mährichtung (`perpendicular`, `parallel` oder `cross`). Eine leere Liste löscht den Plan.
+
+```yaml
+action: handwise_ha.set_mowing_schedule
+target:
+  entity_id: lawn_mower.dein_maeher
+data:
+  entries:
+    - weekday: mon
+      start: "17:00"
+      end: "19:00"
+      cutter_height: 55
+      direction: cross
+    - weekdays: [wed, fri]
+      start: "17:00"
+      cutter_height: 55
+      direction: parallel
+```
+
+Getestet mit einem Redkey MGC1000; das Befehlsformat stammt aus der R-HOME-App. Die App schickt immer die komplette Liste. Eine Änderung in der App ersetzt deshalb den Plan aus Home Assistant und umgekehrt.
 
 ---
 
