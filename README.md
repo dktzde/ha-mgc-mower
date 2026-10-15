@@ -61,7 +61,7 @@ The app always sends the complete schedule, so a change in the app overwrites th
 | Redkey MGC1000 | ✅ tested (this fork) |
 | Handwise MGC500 (MGC01 500) | ✅ tested (upstream) |
 | Redkey MGC500, Redroad MGC500, Anthbot Pion | ❔ largely identical hardware, should work |
-| EZVIZ RM600 | ⚠️ largely identical hardware, but **may use a different cloud** |
+| EZVIZ RM600 | ⚠️ largely identical hardware, but may use a different cloud |
 
 Feedback on other models is welcome: please open an issue.
 
@@ -111,7 +111,7 @@ L'application envoie toujours le planning complet : une modification dans l'appl
 | Redkey MGC1000 | ✅ testé (ce fork) |
 | Handwise MGC500 (MGC01 500) | ✅ testé (upstream) |
 | Redkey MGC500, Redroad MGC500, Anthbot Pion | ❔ matériel très similaire, devrait fonctionner |
-| EZVIZ RM600 | ⚠️ matériel très similaire, mais **utilise peut-être un autre cloud** |
+| EZVIZ RM600 | ⚠️ matériel très similaire, mais utilise peut-être un autre cloud |
 
 Vos retours sur d'autres modèles sont les bienvenus : ouvrez une issue.
 
@@ -161,7 +161,7 @@ Die App schickt immer den kompletten Plan. Eine Änderung in der App überschrei
 | Redkey MGC1000 | ✅ getestet (dieser Fork) |
 | Handwise MGC500 (MGC01 500) | ✅ getestet (Upstream) |
 | Redkey MGC500, Redroad MGC500, Anthbot Pion | ❔ weitgehend baugleich, sollte funktionieren |
-| EZVIZ RM600 | ⚠️ weitgehend baugleich, nutzt aber **eventuell eine andere Cloud** |
+| EZVIZ RM600 | ⚠️ weitgehend baugleich, nutzt aber eventuell eine andere Cloud |
 
 Rückmeldungen zu weiteren Modellen sind willkommen, bitte als Issue.
 
