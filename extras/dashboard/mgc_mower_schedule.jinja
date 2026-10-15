@@ -1,0 +1,46 @@
+{#- MGC Mower example: weekly mowing schedule from dashboard helpers.
+    Copy this file to <config>/custom_templates/mgc_mower_schedule.jinja
+    (used by mgc_mower_schedule.yaml, see extras/dashboard/README.md).
+
+    One entry per ticked day, same time and cutting height for all days.
+    Direction rule (change it in mgc_schedule_entries below):
+    Monday = cross, the other ticked days alternate perpendicular / parallel
+    (starting with perpendicular). -#}
+
+{#- Entries in the format of mgc_mower.set_mowing_schedule (as JSON text) -#}
+{%- macro mgc_schedule_entries() -%}
+{%- set days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] -%}
+{%- set ns = namespace(entries=[], n=0) -%}
+{%- set start = states('input_datetime.mgc_schedule_start')[:5] -%}
+{%- set end = none if is_state('input_boolean.mgc_schedule_until_finished', 'on') else states('input_datetime.mgc_schedule_end')[:5] -%}
+{%- set height = states('input_number.mgc_schedule_height') | int(55) -%}
+{%- for day in days if is_state('input_boolean.mgc_schedule_' ~ day, 'on') -%}
+  {%- if day == 'mon' -%}
+    {%- set direction = 'cross' -%}
+  {%- else -%}
+    {%- set direction = ['perpendicular', 'parallel'][ns.n % 2] -%}
+    {%- set ns.n = ns.n + 1 -%}
+  {%- endif -%}
+  {%- set ns.entries = ns.entries + [{'weekday': day, 'start': start, 'end': end, 'cutter_height': height, 'direction': direction}] -%}
+{%- endfor -%}
+{{- ns.entries | to_json -}}
+{%- endmacro -%}
+
+{#- Comparison key of an entry list (same format as attribute "entries" of the schedule sensor) -#}
+{%- macro mgc_schedule_key(entries) -%}
+{%- set ns = namespace(parts=[]) -%}
+{%- for e in entries or [] -%}
+  {%- set ns.parts = ns.parts + [e.weekday ~ '|' ~ e.start ~ '|' ~ e.end ~ '|' ~ e.cutter_height ~ '|' ~ e.direction] -%}
+{%- endfor -%}
+{{- ns.parts | sort | join(';') -}}
+{%- endmacro -%}
+
+{#- Readable text, e.g. "Mon 17:00–19:00 cross 55 mm · Wed 17:00–19:00 perpendicular 55 mm" -#}
+{%- macro mgc_schedule_text(entries) -%}
+{%- set day_names = {'mon': 'Mon', 'tue': 'Tue', 'wed': 'Wed', 'thu': 'Thu', 'fri': 'Fri', 'sat': 'Sat', 'sun': 'Sun'} -%}
+{%- set ns = namespace(parts=[]) -%}
+{%- for e in entries or [] -%}
+  {%- set ns.parts = ns.parts + [day_names.get(e.weekday, e.weekday) ~ ' ' ~ e.start ~ '–' ~ (e.end or 'until finished') ~ ' ' ~ e.direction ~ ' ' ~ e.cutter_height ~ ' mm'] -%}
+{%- endfor -%}
+{{- ns.parts | join(' · ') if ns.parts else 'no day ticked – no scheduled mowing' -}}
+{%- endmacro -%}

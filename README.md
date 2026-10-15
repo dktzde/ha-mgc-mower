@@ -6,7 +6,7 @@
 
 # MGC Mower
 
-Home Assistant integration for **MGC robotic lawn mowers** on the Anthbot cloud: **Redkey MGC1000 / MGC500, Handwise MGC500 (MGC01 500), Redroad MGC500, Anthbot Pion** and possibly **EZVIZ RM600**.
+Home Assistant integration for **MGC robotic lawn mowers** on the Anthbot cloud: **Redkey MGC1000 / MGC500, Handwise MGC500 (MGC01 500), Redroad MGC500, Anthbot Pion** and possibly EZVIZ RM600.
 
 [English](#english) · [Français](#français) · [Deutsch](#deutsch)
 
@@ -34,6 +34,8 @@ Then: *Settings → Devices & services → Add integration → MGC Mower* and si
 - Writing the weekly mowing schedule (`mgc_mower.set_mowing_schedule`)
 - Everything from Handwise-HA: start, pause, dock, battery, status, progress, cutting height, zones, diagnostics …
 
+**Example dashboard:** control, rain settings and a weekly mowing schedule with a few taps, see [extras/dashboard](extras/dashboard/).
+
 **To do**
 - The message centre can't be read yet
 
@@ -59,7 +61,7 @@ The app always sends the complete schedule, so a change in the app overwrites th
 | Redkey MGC1000 | ✅ tested (this fork) |
 | Handwise MGC500 (MGC01 500) | ✅ tested (upstream) |
 | Redkey MGC500, Redroad MGC500, Anthbot Pion | ❔ largely identical hardware, should work |
-| EZVIZ RM600 | ⚠️ largely identical hardware, but **may use a different cloud** |
+| EZVIZ RM600 | ⚠️ largely identical hardware, but may use a different cloud |
 
 Feedback on other models is welcome: please open an issue.
 
@@ -95,6 +97,8 @@ Ensuite : *Paramètres → Appareils et services → Ajouter une intégration �
 - Écriture du planning de tonte hebdomadaire (`mgc_mower.set_mowing_schedule`, exemple voir [English](#english))
 - Tout ce que fait Handwise-HA : démarrage, pause, retour à la base, batterie, état, progression, hauteur de coupe, zones, diagnostic …
 
+**Tableau de bord d'exemple :** commande, réglages pluie et planning hebdomadaire en quelques clics, voir [extras/dashboard](extras/dashboard/) (en anglais).
+
 **À faire**
 - Le centre de messages ne peut pas encore être lu
 
@@ -107,7 +111,7 @@ L'application envoie toujours le planning complet : une modification dans l'appl
 | Redkey MGC1000 | ✅ testé (ce fork) |
 | Handwise MGC500 (MGC01 500) | ✅ testé (upstream) |
 | Redkey MGC500, Redroad MGC500, Anthbot Pion | ❔ matériel très similaire, devrait fonctionner |
-| EZVIZ RM600 | ⚠️ matériel très similaire, mais **utilise peut-être un autre cloud** |
+| EZVIZ RM600 | ⚠️ matériel très similaire, mais utilise peut-être un autre cloud |
 
 Vos retours sur d'autres modèles sont les bienvenus : ouvrez une issue.
 
@@ -143,6 +147,8 @@ Danach: *Einstellungen → Geräte & Dienste → Integration hinzufügen → MGC
 - Wochen-Mähplan schreiben (`mgc_mower.set_mowing_schedule`, Beispiel siehe [English](#english))
 - Alles aus Handwise-HA: Start, Pause, Zurück zur Station, Akku, Status, Fortschritt, Schnitthöhe, Zonen, Diagnose …
 
+**Beispiel-Dashboard:** Steuerung, Regen-Einstellungen und Wochen-Mähplan mit ein paar Klicks, siehe [extras/dashboard](extras/dashboard/) (englisch).
+
 **Noch offen**
 - Das Message Center kann noch nicht ausgelesen werden
 
@@ -155,7 +161,7 @@ Die App schickt immer den kompletten Plan. Eine Änderung in der App überschrei
 | Redkey MGC1000 | ✅ getestet (dieser Fork) |
 | Handwise MGC500 (MGC01 500) | ✅ getestet (Upstream) |
 | Redkey MGC500, Redroad MGC500, Anthbot Pion | ❔ weitgehend baugleich, sollte funktionieren |
-| EZVIZ RM600 | ⚠️ weitgehend baugleich, nutzt aber **eventuell eine andere Cloud** |
+| EZVIZ RM600 | ⚠️ weitgehend baugleich, nutzt aber eventuell eine andere Cloud |
 
 Rückmeldungen zu weiteren Modellen sind willkommen, bitte als Issue.
 
