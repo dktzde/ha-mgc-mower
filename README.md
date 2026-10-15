@@ -34,6 +34,8 @@ Then: *Settings → Devices & services → Add integration → MGC Mower* and si
 - Writing the weekly mowing schedule (`mgc_mower.set_mowing_schedule`)
 - Everything from Handwise-HA: start, pause, dock, battery, status, progress, cutting height, zones, diagnostics …
 
+**Example dashboard:** control, rain settings and a weekly mowing schedule with a few taps, see [extras/dashboard](extras/dashboard/).
+
 **To do**
 - The message centre can't be read yet
 
@@ -95,6 +97,8 @@ Ensuite : *Paramètres → Appareils et services → Ajouter une intégration �
 - Écriture du planning de tonte hebdomadaire (`mgc_mower.set_mowing_schedule`, exemple voir [English](#english))
 - Tout ce que fait Handwise-HA : démarrage, pause, retour à la base, batterie, état, progression, hauteur de coupe, zones, diagnostic …
 
+**Tableau de bord d'exemple :** commande, réglages pluie et planning hebdomadaire en quelques clics, voir [extras/dashboard](extras/dashboard/) (en anglais).
+
 **À faire**
 - Le centre de messages ne peut pas encore être lu
 
@@ -142,6 +146,8 @@ Danach: *Einstellungen → Geräte & Dienste → Integration hinzufügen → MGC
 - Regenerkennung ein/aus
 - Wochen-Mähplan schreiben (`mgc_mower.set_mowing_schedule`, Beispiel siehe [English](#english))
 - Alles aus Handwise-HA: Start, Pause, Zurück zur Station, Akku, Status, Fortschritt, Schnitthöhe, Zonen, Diagnose …
+
+**Beispiel-Dashboard:** Steuerung, Regen-Einstellungen und Wochen-Mähplan mit ein paar Klicks, siehe [extras/dashboard](extras/dashboard/) (englisch).
 
 **Noch offen**
 - Das Message Center kann noch nicht ausgelesen werden

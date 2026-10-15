@@ -6,6 +6,10 @@ Dates are release dates (YYYY-MM-DD).
 
 ## MGC Mower, maintained by [dktzde](https://github.com/dktzde) (from 0.2.0)
 
+### Unreleased
+
+- **Extras:** `extras/dashboard`, an example dashboard (control, rain settings, condition) with a weekly mowing schedule editor (package + template macros). Not installed by HACS.
+
 ### 0.2.0 – 2026-10-14
 
 First release of MGC Mower. Forked from Handwise-HA at commit `a292dbc` (2026-06-09).

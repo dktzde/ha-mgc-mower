@@ -1,0 +1,136 @@
+# MGC Mower example: weekly mowing schedule edited from the dashboard.
+# Tick the days, set one start time (end time or "until finished") and one cutting height for all days.
+# The direction rule lives in custom_templates/mgc_mower_schedule.jinja.
+# The schedule is stored in the mower (service mgc_mower.set_mowing_schedule, same command as the app)
+# and runs there without Home Assistant. A change in the app replaces it, and vice versa.
+#
+# Setup: see extras/dashboard/README.md. Replace "my_mower" with your mower's entity prefix.
+
+# Days
+input_boolean:
+  mgc_schedule_mon:
+    name: "Mowing schedule Mon"
+    icon: mdi:calendar-check
+  mgc_schedule_tue:
+    name: "Mowing schedule Tue"
+    icon: mdi:calendar-check
+  mgc_schedule_wed:
+    name: "Mowing schedule Wed"
+    icon: mdi:calendar-check
+  mgc_schedule_thu:
+    name: "Mowing schedule Thu"
+    icon: mdi:calendar-check
+  mgc_schedule_fri:
+    name: "Mowing schedule Fri"
+    icon: mdi:calendar-check
+  mgc_schedule_sat:
+    name: "Mowing schedule Sat"
+    icon: mdi:calendar-check
+  mgc_schedule_sun:
+    name: "Mowing schedule Sun"
+    icon: mdi:calendar-check
+  # On = no end time, mow until the lawn is finished (app: "until finished")
+  mgc_schedule_until_finished:
+    name: "Mowing schedule until finished"
+    icon: mdi:flag-checkered
+
+# Time for all days
+input_datetime:
+  mgc_schedule_start:
+    name: "Mowing schedule start"
+    has_date: false
+    has_time: true
+    icon: mdi:clock-start
+  mgc_schedule_end:
+    name: "Mowing schedule end"
+    has_date: false
+    has_time: true
+    icon: mdi:clock-end
+
+# Cutting height for all days (like the app: 30–70 mm in 5 mm steps)
+input_number:
+  mgc_schedule_height:
+    name: "Mowing schedule cutting height"
+    min: 30
+    max: 70
+    step: 5
+    unit_of_measurement: mm
+    mode: slider
+    icon: mdi:grass
+
+# Preview of what HA would send, and comparison with the schedule stored in the mower
+template:
+  - sensor:
+      - name: "Mowing schedule setting"
+        unique_id: mgc_schedule_setting
+        icon: mdi:calendar-edit
+        state: >-
+          {% from 'mgc_mower_schedule.jinja' import mgc_schedule_entries, mgc_schedule_text %}
+          {{ mgc_schedule_text(mgc_schedule_entries() | from_json) | truncate(250, true, '…') }}
+      - name: "Mowing schedule on mower"
+        unique_id: mgc_schedule_on_mower
+        icon: mdi:robot-mower
+        availability: "{{ has_value('sensor.my_mower_mowing_schedule') }}"
+        state: >-
+          {% from 'mgc_mower_schedule.jinja' import mgc_schedule_text %}
+          {{ mgc_schedule_text(state_attr('sensor.my_mower_mowing_schedule', 'entries')) | truncate(250, true, '…') }}
+    binary_sensor:
+      # On = the mower has stored exactly the schedule from the dashboard
+      - name: "Mowing schedule synced"
+        unique_id: mgc_schedule_synced
+        icon: mdi:calendar-sync
+        availability: "{{ has_value('sensor.my_mower_mowing_schedule') }}"
+        state: >-
+          {% from 'mgc_mower_schedule.jinja' import mgc_schedule_entries, mgc_schedule_key %}
+          {{ mgc_schedule_key(mgc_schedule_entries() | from_json)
+             == mgc_schedule_key(state_attr('sensor.my_mower_mowing_schedule', 'entries')) }}
+
+# Sends the schedule from the helpers to the mower (replaces the whole schedule in the mower)
+script:
+  mgc_schedule_send:
+    alias: "Send mowing schedule to the mower"
+    icon: mdi:send-clock
+    mode: queued
+    sequence:
+      - variables:
+          entries: >-
+            {% from 'mgc_mower_schedule.jinja' import mgc_schedule_entries %}
+            {{ mgc_schedule_entries() | from_json }}
+      - action: mgc_mower.set_mowing_schedule
+        target:
+          entity_id: lawn_mower.my_mower
+        data:
+          entries: "{{ entries }}"
+
+# After a change in the dashboard wait 15 s (for further changes), then send –
+# only if the mower's schedule differs. Nothing is sent on HA start (helpers restored).
+automation:
+  - id: mgc_schedule_send_after_change
+    alias: "MGC Mower: send schedule after change"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id:
+          - input_boolean.mgc_schedule_mon
+          - input_boolean.mgc_schedule_tue
+          - input_boolean.mgc_schedule_wed
+          - input_boolean.mgc_schedule_thu
+          - input_boolean.mgc_schedule_fri
+          - input_boolean.mgc_schedule_sat
+          - input_boolean.mgc_schedule_sun
+          - input_boolean.mgc_schedule_until_finished
+          - input_datetime.mgc_schedule_start
+          - input_datetime.mgc_schedule_end
+          - input_number.mgc_schedule_height
+    conditions:
+      - condition: template
+        value_template: >-
+          {{ trigger.from_state is not none
+             and trigger.from_state.state not in ['unknown', 'unavailable']
+             and trigger.to_state.state not in ['unknown', 'unavailable'] }}
+    actions:
+      - delay: 15
+      - condition: state
+        entity_id: binary_sensor.mowing_schedule_synced
+        state: "off"
+      - action: script.mgc_schedule_send

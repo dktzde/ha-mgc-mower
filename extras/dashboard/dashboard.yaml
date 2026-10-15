@@ -1,0 +1,260 @@
+# MGC Mower example dashboard: control, rain settings, condition and the weekly mowing schedule.
+# Settings → Dashboards → Add dashboard → open it → ⋮ → Edit → ⋮ → Raw configuration editor → paste this file.
+# Replace "my_mower" with your mower's entity prefix (lawn_mower.<prefix>).
+# The "Mowing schedule" section needs mgc_mower_schedule.yaml + .jinja (see README.md); without them, delete that section.
+
+title: Lawn mower
+views:
+- title: Lawn mower
+  path: lawn-mower
+  icon: mdi:robot-mower
+  type: sections
+  max_columns: 2
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Lawn mower
+      heading_style: title
+      icon: mdi:robot-mower
+    - type: tile
+      entity: lawn_mower.my_mower
+      name: Mower
+      state_content:
+      - state
+      - last_changed
+    - type: tile
+      entity: sensor.my_mower_battery_level
+      name: Battery
+    - type: tile
+      entity: sensor.my_mower_mower_status
+      name: Status
+    - type: tile
+      entity: sensor.my_mower_mowing_progress
+      name: Progress
+    - type: tile
+      entity: button.my_mower_start_mowing
+      name: Start mowing
+      icon: mdi:play
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_start_mowing
+        confirmation:
+          text: Send the mower out now? The blades will start.
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_start_mowing
+        confirmation:
+          text: Send the mower out now? The blades will start.
+    - type: tile
+      entity: button.my_mower_pause_mowing
+      name: Pause
+      icon: mdi:pause
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_pause_mowing
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_pause_mowing
+    - type: tile
+      entity: button.my_mower_return_to_dock
+      name: Return to dock
+      icon: mdi:home-import-outline
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_return_to_dock
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_return_to_dock
+    - type: heading
+      heading: Rain
+      heading_style: subtitle
+      icon: mdi:weather-pouring
+    - type: tile
+      entity: switch.my_mower_rain_detection
+      name: Rain detection
+    - type: tile
+      entity: number.my_mower_rain_wait_time
+      name: Wait after rain
+      icon: mdi:timer-sand
+    - type: heading
+      heading: Condition
+      heading_style: subtitle
+      icon: mdi:information-outline
+    - type: tile
+      entity: binary_sensor.my_mower_connection
+      name: Connection
+    - type: tile
+      entity: sensor.my_mower_wifi_signal
+      name: WiFi signal
+    - type: tile
+      entity: binary_sensor.my_mower_error
+      name: Error
+    - type: tile
+      entity: sensor.my_mower_error_code
+      name: Error code
+    - type: tile
+      entity: binary_sensor.my_mower_safety_trigger
+      name: Safety trigger
+    - type: tile
+      entity: sensor.my_mower_pin_status
+      name: PIN
+    - type: tile
+      entity: sensor.my_mower_cutting_height
+      name: Cutting height
+    - type: tile
+      entity: sensor.my_mower_mowing_area
+      name: Mowed area (session)
+    - type: history-graph
+      title: Battery and mowing (48 h)
+      hours_to_show: 48
+      entities:
+      - entity: sensor.my_mower_battery_level
+        name: Battery
+      - entity: lawn_mower.my_mower
+        name: Mower
+      grid_options:
+        columns: 12
+  - type: grid
+    cards:
+    - type: heading
+      heading: Mowing schedule (week)
+      heading_style: title
+      icon: mdi:calendar-clock
+    - type: markdown
+      content: |-
+        **Setting:** {{ states('sensor.mowing_schedule_setting') }}
+        **In the mower:** {{ states('sensor.mowing_schedule_on_mower') }}
+        {% if is_state('binary_sensor.mowing_schedule_synced', 'on') -%}
+        ✅ Stored in the mower – it mows on its own, even without Home Assistant.
+        {%- elif state_attr('automation.mgc_mower_send_schedule_after_change', 'current') | int(0) > 0 or state_attr('script.mgc_schedule_send', 'current') | int(0) > 0 -%}
+        ⏳ Sending to the mower …
+        {%- else -%}
+        ⚠️ Differs (e.g. changed in the app) – **Send now** applies the setting.
+        {%- endif %}
+
+        <small>Mon = cross, the other days alternate perpendicular / parallel · every week · changes are sent to the mower automatically after 15 s.</small>
+    - type: tile
+      entity: input_boolean.mgc_schedule_mon
+      name: Mon
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_tue
+      name: Tue
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_wed
+      name: Wed
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_thu
+      name: Thu
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_fri
+      name: Fri
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_sat
+      name: Sat
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_sun
+      name: Sun
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_datetime.mgc_schedule_start
+      name: Start
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: input_datetime.mgc_schedule_end
+      name: End
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: input_boolean.mgc_schedule_until_finished
+      name: Until finished (no end time)
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 12
+    - type: tile
+      entity: input_number.mgc_schedule_height
+      name: Cutting height for all days
+      features:
+      - type: numeric-input
+        style: slider
+      grid_options:
+        columns: 12
+    - type: tile
+      entity: script.mgc_schedule_send
+      name: Send now
+      icon: mdi:send-clock
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: script.mgc_schedule_send
+        confirmation:
+          text: Send the schedule to the mower now? The schedule in the mower (also one set in the app) is replaced.
+      grid_options:
+        columns: 12
