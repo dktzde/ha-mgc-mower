@@ -6,7 +6,7 @@
 
 # MGC Mower
 
-Home Assistant integration for **MGC robotic lawn mowers** on the Anthbot cloud: **Redkey MGC1000 / MGC500, Handwise MGC500 (MGC01 500), Redroad MGC500, Anthbot Pion** and possibly **EZVIZ RM600**.
+Home Assistant integration for **MGC robotic lawn mowers** on the Anthbot cloud: **Redkey MGC1000 / MGC500, Handwise MGC500 (MGC01 500), Redroad MGC500, Anthbot Pion** and possibly EZVIZ RM600.
 
 [English](#english) · [Français](#français) · [Deutsch](#deutsch)
 
