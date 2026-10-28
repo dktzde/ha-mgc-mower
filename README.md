@@ -65,7 +65,7 @@ The app always sends the complete schedule, so a change in the app overwrites th
 
 Feedback on other models is welcome: please open an issue.
 
-> 🌱 **Hobby project:** I maintain this in my spare time and answer at my own pace. No guarantee, no support obligation. Pull requests are very welcome.
+> 🌱 **Hobby project:** I maintain this in my spare time and answer at my own pace. Pull requests are welcome.
 
 > ⚠️ **Caution:** my mower is already in winter hibernation. The changes have only been tested briefly.
 
@@ -117,7 +117,7 @@ L'application envoie toujours le planning complet : une modification dans l'appl
 
 Vos retours sur d'autres modèles sont les bienvenus : ouvrez une issue.
 
-> 🌱 **Projet de loisir :** je le maintiens sur mon temps libre et réponds à mon rythme. Aucune garantie, aucune obligation de support. Les pull requests sont les bienvenues.
+> 🌱 **Projet de loisir :** je le maintiens sur mon temps libre et réponds à mon rythme. Les pull requests sont les bienvenues.
 
 > ⚠️ **Attention :** ma tondeuse est déjà en hivernage. Les modifications n'ont été testées que brièvement.
 
@@ -169,7 +169,7 @@ Die App schickt immer den kompletten Plan. Eine Änderung in der App überschrei
 
 Rückmeldungen zu weiteren Modellen sind willkommen, bitte als Issue.
 
-> 🌱 **Hobbyprojekt:** Ich pflege das in meiner Freizeit und antworte in meinem eigenen Tempo. Keine Garantie, keine Support-Pflicht. Pull Requests sind sehr willkommen.
+> 🌱 **Hobbyprojekt:** Ich pflege das in meiner Freizeit und antworte in meinem eigenen Tempo. Pull Requests sind willkommen.
 
 > ⚠️ **Achtung:** Mein Mäher ist schon im Winterschlaf. Die Änderungen wurden nur kurz getestet.
 
