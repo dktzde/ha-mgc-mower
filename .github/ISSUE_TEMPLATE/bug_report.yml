@@ -1,0 +1,35 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! This is a hobby project, answers may take a while.
+        Deutsch und Français sind auch okay.
+  - type: input
+    id: model
+    attributes:
+      label: Mower model
+      placeholder: e.g. Redkey MGC1000
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Integration version / Home Assistant version
+      placeholder: e.g. 0.2.1 / 2026.10.1
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs (optional)
+      description: Settings → System → Logs, filter for mgc_mower. Please remove account data.
+      render: text
