@@ -1,0 +1,25 @@
+name: Model feedback
+description: Tell us whether your mower model works
+labels: [model feedback]
+body:
+  - type: input
+    id: model
+    attributes:
+      label: Mower model and app
+      placeholder: e.g. Anthbot Pion, Anthbot app
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Does it work?
+      options:
+        - Everything works
+        - Partly
+        - Not at all
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details (optional)
