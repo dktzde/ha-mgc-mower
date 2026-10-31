@@ -178,3 +178,7 @@ Rückmeldungen zu weiteren Modellen sind willkommen, bitte als Issue.
 Vielen Dank an [MTTPoll/handwise-ha](https://github.com/MTTPoll/handwise-ha), auf dem diese Integration aufbaut. Inoffizielles Projekt, keine Verbindung zu Redkey, Handwise, Anthbot, Redroad oder EZVIZ.
 
 Historie: [CHANGELOG](CHANGELOG.md). Bis 0.1.0 von MTTPoll, ab 0.2.0 von dktzde.
+
+---
+
+*Entstanden mit Hilfe von [Claude Code in Home Assistant](https://github.com/dktzde/hass-claude-code). Im Gegensatz zum Mäher hält es keinen Winterschlaf.*
