@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit settings: reviews only the integration code, with few and relevant comments.
+# Free for public repositories. Docs: https://docs.coderabbit.ai/reference/configuration
+language: en-US
+
+reviews:
+  # quiet = only important findings, chill = balanced, assertive = many (nitpicky)
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  collapse_walkthrough: true
+  changed_files_summary: false
+  sequence_diagrams: false
+  estimate_code_review_effort: false
+  related_prs: false
+  suggested_labels: false
+  suggested_reviewers: false
+  poem: false
+  in_progress_fortune: false
+
+  auto_review:
+    enabled: true
+    drafts: false
+    # documentation-only PRs need no automatic review
+    ignore_title_keywords:
+      - "docs:"
+      - "docs("
+
+  # Only the code: no Markdown, images or debug extras
+  path_filters:
+    - "!**/*.md"
+    - "!**/*.png"
+    - "!extras/**"
+
+  path_instructions:
+    - path: "custom_components/mgc_mower/**/*.py"
+      instructions: >-
+        Home Assistant custom integration (domain mgc_mower) for MGC robotic mowers on the Anthbot cloud.
+        Check for blocking I/O in the event loop, unhandled cloud/network errors, entities that break when the
+        cloud returns missing or unexpected fields, and secrets or personal data (serial numbers, tokens, coordinates) in logs.
+        Follow current Home Assistant integration conventions (config entries, DataUpdateCoordinator, translations).
+    - path: "custom_components/mgc_mower/translations/*.json"
+      instructions: "Keys must match strings.json."
+
+chat:
+  auto_reply: true
