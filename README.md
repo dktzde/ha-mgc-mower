@@ -181,4 +181,4 @@ Historie: [CHANGELOG](CHANGELOG.md). Bis 0.1.0 von MTTPoll, ab 0.2.0 von dktzde.
 
 ---
 
-*Entstanden mit Hilfe von [Claude Code in Home Assistant](https://github.com/dktzde/hass-claude-code). Im Gegensatz zum Mäher hält es keinen Winterschlaf.*
+*Ich besitze einen Redkey MGC 1000. Diese Integration ist mit Hilfe von [Claude](https://github.com/dktzde/hass-claude-code) entstanden.*
