@@ -6,6 +6,11 @@ Dates are release dates (YYYY-MM-DD).
 
 ## MGC Mower, maintained by [dktzde](https://github.com/dktzde) (from 0.2.0)
 
+### 0.2.2 – 2026-11-11
+
+- **Fixed:** the connection sensor stayed "connected" after the mower was switched off or lost power or Wi-Fi, because the cloud keeps the last `online` value. It is now off when the mower reports `shutdown`, and when the mower has been silent for 30 minutes and does not answer a status request (`get_all_props`, MGC firmware only; a docked mower is asked about every 30 minutes).
+- **Added:** attribute `last_report` on the connection sensor: when the mower last wrote to the cloud.
+
 ### 0.2.1 – 2026-10-28
 
 - **Extras:** `extras/dashboard`, an example dashboard (control, rain settings, condition) with a weekly mowing schedule editor (package + template macros). Not installed by HACS.
