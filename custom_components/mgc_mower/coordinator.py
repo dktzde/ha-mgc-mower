@@ -21,8 +21,10 @@ _LOGGER = logging.getLogger(__name__)
 
 # The shadow keeps the last values forever, also "online": 1 after the mower lost
 # power or Wi-Fi. A docked mower does not report on its own, so when its last
-# report is older than this, it is asked for its status ("get_all_props").
-STALE_REPORT_SECONDS = 1800
+# report is older than this, it is asked once for its status ("get_all_props").
+# Without an answer it counts as off and is not asked again; it reports on its
+# own when it is back (e.g. "charging").
+STALE_REPORT_SECONDS = 6 * 3600
 # A status request is judged at the first poll that is at least this much later.
 # An online mower answers within a few seconds.
 PROBE_ANSWER_SECONDS = 20
@@ -59,7 +61,7 @@ class HandwiseGenieDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Return the latest reported state."""
         return self.data if isinstance(self.data, dict) else {}
 
-    def _judge_report_age(self) -> bool:
+    def _judge_report_age(self, mode: Any = None) -> bool:
         """Update the responding flag; return true if a status request is due."""
         shadow_time = self.client.property_shadow_time
         report_time = self.client.property_report_time
@@ -69,8 +71,12 @@ class HandwiseGenieDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             self._probe_shadow_time = None
             self._device_responding = True
             return False
+        if not self._device_responding:
+            # Already counted as off: wait for the mower to report on its own.
+            return False
         if self._probe_shadow_time is None:
-            return True
+            # A mower that reported "shutdown" is off anyway, no need to ask.
+            return not (isinstance(mode, str) and mode.lower() == "shutdown")
         if shadow_time - self._probe_shadow_time < PROBE_ANSWER_SECONDS:
             # Too early to judge, e.g. a refresh right after a command.
             return False
@@ -78,13 +84,13 @@ class HandwiseGenieDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # (An answer would have made the report fresh, see above.)
         self._device_responding = False
         self._probe_shadow_time = None
-        return True
+        return False
 
-    async def _async_probe_if_stale(self) -> None:
+    async def _async_probe_if_stale(self, mode: Any = None) -> None:
         """Ask a silent mower for its status so the next poll can tell if it is online."""
         if not self.client.supports_status_probe:
             return
-        if not self._judge_report_age():
+        if not self._judge_report_age(mode):
             return
         try:
             await self.client.async_request_all_properties()
@@ -123,7 +129,7 @@ class HandwiseGenieDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     if not self._area_definition:
                         self._area_definition = {}
 
-            await self._async_probe_if_stale()
+            await self._async_probe_if_stale(property_state.get("mode"))
 
             merged_state = dict(property_state)
             merged_state["_device_responding"] = self._device_responding
