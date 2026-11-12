@@ -36,6 +36,8 @@ Then: *Settings → Devices & services → Add integration → MGC Mower* and si
 
 **Example dashboard:** control, rain settings and a weekly mowing schedule with a few taps, see [extras/dashboard](extras/dashboard/).
 
+**Event codes:** what the values of the `Event code` sensor mean (app Message Center), with a how-to for reading your own, see [extras/event_codes](extras/event_codes/).
+
 **To do**
 - The message centre can't be read yet
 
@@ -101,6 +103,8 @@ Ensuite : *Paramètres → Appareils et services → Ajouter une intégration �
 
 **Tableau de bord d'exemple :** commande, réglages pluie et planning hebdomadaire en quelques clics, voir [extras/dashboard](extras/dashboard/) (en anglais).
 
+**Codes d'événement :** signification des valeurs du capteur `Event code` (centre de messages de l'app), avec une méthode pour lire les vôtres, voir [extras/event_codes](extras/event_codes/) (en anglais).
+
 **À faire**
 - Le centre de messages ne peut pas encore être lu
 
@@ -152,6 +156,8 @@ Danach: *Einstellungen → Geräte & Dienste → Integration hinzufügen → MGC
 - Alles aus Handwise-HA: Start, Pause, Zurück zur Station, Akku, Status, Fortschritt, Schnitthöhe, Zonen, Diagnose …
 
 **Beispiel-Dashboard:** Steuerung, Regen-Einstellungen und Wochen-Mähplan mit ein paar Klicks, siehe [extras/dashboard](extras/dashboard/) (englisch).
+
+**Event-Codes:** Bedeutung der Werte des Sensors `Event code` (Message Center der App) und Anleitung zum Auslesen der eigenen, siehe [extras/event_codes](extras/event_codes/) (englisch).
 
 **Noch offen**
 - Das Message Center kann noch nicht ausgelesen werden

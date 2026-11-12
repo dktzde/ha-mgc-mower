@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Read `STATUS.md` first** (current state, next steps, known issues).
+
 ## Git, commits and pull requests
 
 These rules apply to every session, also to Claude Code on the web.
