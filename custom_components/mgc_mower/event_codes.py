@@ -45,9 +45,10 @@ def normalize_event_code(value: Any) -> int | None:
     if isinstance(value, float) and value.is_integer():
         return int(value)
     if isinstance(value, str):
-        text = value.strip()
-        if text.lstrip("-").isdigit():
-            return int(text)
+        try:
+            return int(value.strip())
+        except ValueError:
+            return None
     return None
 
 
