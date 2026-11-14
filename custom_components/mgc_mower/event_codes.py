@@ -125,7 +125,7 @@ _NOTIFICATION_TEXTS: dict[str, dict[str, str]] = {
     "en": {
         "title": "MGC Mower: unknown event code {code}",
         "message": (
-            "Your mower **{name}** reported the event code **{code}** at {time}. "
+            "Your mower **{name}** reported the event code **{code}** on {time}. "
             "The integration does not know this code yet. Please help to improve it, it only takes two minutes:\n\n"
             "1. Open the mower app (e.g. R HOME), tap the speech bubble at the top right and open the **Message Center**.\n"
             "2. Find the message from about {time} (it can be up to 4 minutes earlier). "
@@ -140,7 +140,7 @@ _NOTIFICATION_TEXTS: dict[str, dict[str, str]] = {
     "de": {
         "title": "MGC Mower: unbekannter Ereigniscode {code}",
         "message": (
-            "Dein Mäher **{name}** hat um {time} den Ereigniscode **{code}** gemeldet. "
+            "Dein Mäher **{name}** hat am {time} den Ereigniscode **{code}** gemeldet. "
             "Diesen Code kennt die Integration noch nicht. Bitte hilf bei der Entwicklung, es dauert nur zwei Minuten:\n\n"
             "1. Öffne die App des Mähers (z. B. R HOME), tippe oben rechts auf die Sprechblase und öffne das **Message Center**.\n"
             "2. Suche die Meldung von etwa {time} (sie kann bis zu 4 Minuten früher sein). "
@@ -155,7 +155,7 @@ _NOTIFICATION_TEXTS: dict[str, dict[str, str]] = {
     "fr": {
         "title": "MGC Mower : code d'événement inconnu {code}",
         "message": (
-            "Votre tondeuse **{name}** a signalé le code d'événement **{code}** à {time}. "
+            "Votre tondeuse **{name}** a signalé le code d'événement **{code}** le {time}. "
             "L'intégration ne connaît pas encore ce code. Aidez-nous à l'améliorer, cela ne prend que deux minutes :\n\n"
             "1. Ouvrez l'application de la tondeuse (p. ex. R HOME), touchez la bulle en haut à droite et ouvrez le "
             "**Message Center**.\n"
