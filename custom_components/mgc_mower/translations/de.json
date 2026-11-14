@@ -123,5 +123,19 @@
         "name": "Mäher"
       }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MGC Mower Optionen",
+        "description": "Meldet der Mäher einen Ereigniscode, den diese Integration noch nicht kennt, zeigt Home Assistant einmal je Code eine Benachrichtigung. Sie bittet darum, den Code mit einem Screenshot der App-Meldung zu melden, damit er für alle ergänzt werden kann.",
+        "data": {
+          "notify_unknown_event_codes": "Bei unbekannten Ereigniscodes benachrichtigen"
+        },
+        "data_description": {
+          "notify_unknown_event_codes": "Jeder unbekannte Code wird nur einmal gemeldet. Ausschalten, wenn du diese Benachrichtigungen nicht möchtest."
+        }
+      }
+    }
   }
 }

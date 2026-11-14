@@ -123,5 +123,19 @@
         "name": "Mower"
       }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MGC Mower options",
+        "description": "When the mower reports an event code this integration does not know yet, Home Assistant shows a notification once per code. It asks you to report the code with a screenshot of the app message, so it can be added for everyone.",
+        "data": {
+          "notify_unknown_event_codes": "Notify about unknown event codes"
+        },
+        "data_description": {
+          "notify_unknown_event_codes": "Each unknown code is reported only once. Turn off if you do not want these notifications."
+        }
+      }
+    }
   }
 }
