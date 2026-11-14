@@ -1,0 +1,72 @@
+name: Unknown event code
+description: Home Assistant told you about an event code the integration does not know yet
+title: "Unknown event_code "
+labels: [event code]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping! Each new code makes the integration better for everyone.
+        If you came here from the Home Assistant notification, most fields are already filled in.
+        Deutsch und Français sind auch okay.
+
+        **How to find the matching app message:** open the mower app (e.g. R HOME), tap the speech bubble at the top right → **Message Center**, and look for the message from the time below. Step-by-step guide with pictures: [extras/event_codes](https://github.com/dktzde/ha-mgc-mower/tree/main/extras/event_codes).
+  - type: input
+    id: event_code
+    attributes:
+      label: Event code
+      description: Value of the `event_code` sensor.
+      placeholder: e.g. 77
+    validations:
+      required: true
+  - type: input
+    id: previous_code
+    attributes:
+      label: Previous event code (optional)
+      placeholder: e.g. 23
+  - type: input
+    id: seen_at
+    attributes:
+      label: When did Home Assistant see it?
+      description: Local time. The app message is usually 0–4 minutes earlier (polling interval).
+      placeholder: e.g. 2026-11-14 18:03 (UTC+01:00)
+    validations:
+      required: true
+  - type: input
+    id: mode
+    attributes:
+      label: Mower mode at that time (optional)
+      placeholder: e.g. charge, mowing, backtodock
+  - type: textarea
+    id: app_message
+    attributes:
+      label: Message in the app
+      description: |
+        A screenshot of the Message Center is recommended (drag and drop the image here; please hide account data).
+        Copying the message text and its time is fine, too.
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Mower model
+      placeholder: e.g. Redkey MGC1000
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Mower firmware (optional)
+      placeholder: e.g. ui_board 0.3.5, motor_board 00d3
+  - type: input
+    id: versions
+    attributes:
+      label: Integration version / Home Assistant version
+      placeholder: e.g. 0.3.0 / 2026.11.1
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else? (optional)
+      description: What was the mower doing? Rain, mowing, charging, a button pressed …
