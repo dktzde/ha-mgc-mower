@@ -6,7 +6,7 @@ Dates are release dates (YYYY-MM-DD).
 
 ## MGC Mower, maintained by [dktzde](https://github.com/dktzde) (from 0.2.0)
 
-### 0.2.2 – 2026-11-11
+### 0.2.2 – 2026-11-14
 
 - **Fixed:** the connection sensor stayed "connected" after the mower was switched off or lost power or Wi-Fi, because the cloud keeps the last `online` value. It is now off when the mower reports `shutdown`, and when the mower has been silent for 6 hours and does not answer one status request (`get_all_props`, MGC firmware only). After that it is not asked again; the sensor turns on when the mower reports on its own. A docked mower that is online is asked about every 6 hours.
 - **Added:** attribute `last_report` on the connection sensor: when the mower last wrote to the cloud.
