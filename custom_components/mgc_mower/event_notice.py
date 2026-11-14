@@ -74,7 +74,13 @@ async def async_get_notified_event_codes(hass: HomeAssistant) -> NotifiedEventCo
         hass.data[DATA_NOTIFIED_CODES] = notified
         notified.load_task = hass.async_create_task(notified.async_load())
     if notified.load_task is not None:
-        await notified.load_task
+        try:
+            await notified.load_task
+        except Exception:
+            # Let the next setup attempt create a fresh tracker and read the file again.
+            if hass.data.get(DATA_NOTIFIED_CODES) is notified:
+                hass.data.pop(DATA_NOTIFIED_CODES)
+            raise
     return notified
 
 
@@ -107,6 +113,7 @@ class UnknownEventCodeWatcher:
         self._current_code: int | None = None
         self._previous_code: int | None = None
         self._changed_at: datetime | None = None
+        self._mode_at_change: Any = None
 
     @callback
     def async_check(self) -> None:
@@ -121,6 +128,7 @@ class UnknownEventCodeWatcher:
             self._previous_code = self._current_code
             self._current_code = code
             self._changed_at = dt_util.now()
+            self._mode_at_change = state.get("mode")
 
         if not is_reportable_event_code(code) or code in self._notified.codes:
             return
@@ -134,7 +142,7 @@ class UnknownEventCodeWatcher:
     def _notify(self, code: int, state: dict[str, Any]) -> None:
         device = self._coordinator.device
         short_time, seen_at = _format_local_time(self._changed_at or dt_util.now())
-        mode = state.get("mode")
+        mode = self._mode_at_change if self._changed_at else state.get("mode")
         issue_url = build_issue_url(
             code=code,
             previous_code=self._previous_code,
