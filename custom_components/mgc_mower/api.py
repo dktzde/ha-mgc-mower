@@ -450,6 +450,30 @@ class HandwiseCloudApiClient:
         return None
 
 
+def newest_report_timestamp(metadata: Any) -> int | None:
+    """Return the newest "timestamp" in (nested) shadow metadata.
+
+    AWS IoT keeps one timestamp per reported field. The newest one tells when
+    the device last wrote to its shadow, no matter what the values say.
+    """
+    newest: int | None = None
+    if isinstance(metadata, dict):
+        value = metadata.get("timestamp")
+        if isinstance(value, int) and not isinstance(value, bool):
+            newest = value
+        for child in metadata.values():
+            if isinstance(child, (dict, list)):
+                found = newest_report_timestamp(child)
+                if found is not None and (newest is None or found > newest):
+                    newest = found
+    elif isinstance(metadata, list):
+        for child in metadata:
+            found = newest_report_timestamp(child)
+            if found is not None and (newest is None or found > newest):
+                newest = found
+    return newest
+
+
 class HandwiseShadowApiClient:
     """Client for Handwise AWS IoT shadow endpoint."""
 
@@ -474,6 +498,8 @@ class HandwiseShadowApiClient:
         self._iot_endpoint = self._normalize_endpoint(iot_endpoint)
         self._temporary_credentials: HandwiseTemporaryIotCredentials | None = None
         self._temporary_credentials_expires_at = 0.0
+        self._property_shadow_time: int | None = None
+        self._property_report_time: int | None = None
         if iot_credentials is not None:
             self.set_temporary_credentials(iot_credentials)
         endpoint_region = self._guess_region_from_endpoint(self._iot_endpoint)
@@ -554,6 +580,25 @@ class HandwiseShadowApiClient:
     def serial_number(self) -> str:
         """Return the configured device serial number."""
         return self._serial_number
+
+    @property
+    def property_shadow_time(self) -> int | None:
+        """Return the cloud time (epoch seconds) of the last property shadow fetch."""
+        return self._property_shadow_time
+
+    @property
+    def property_report_time(self) -> int | None:
+        """Return when the mower last wrote to its property shadow (epoch seconds)."""
+        return self._property_report_time
+
+    @property
+    def supports_status_probe(self) -> bool:
+        """Return whether the mower answers "get_all_props" on the service shadow.
+
+        Confirmed on MGC firmware only; M5/M9 have no service shadow.
+        """
+        model = str(self._device_model or "").upper()
+        return "M5" not in model and "M9" not in model
 
     @property
     def iot_endpoint(self) -> str:
@@ -771,6 +816,19 @@ class HandwiseShadowApiClient:
         reported = state.get("reported") if isinstance(state, dict) else None
         if not isinstance(reported, dict):
             raise HandwiseGenieApiError("Missing state.reported in response")
+
+        if shadow_name == "property":
+            # Both values come from the cloud, so the local clock does not matter.
+            shadow_time = payload.get("timestamp")
+            metadata = payload.get("metadata")
+            self._property_shadow_time = (
+                shadow_time
+                if isinstance(shadow_time, int) and not isinstance(shadow_time, bool)
+                else None
+            )
+            self._property_report_time = newest_report_timestamp(
+                metadata.get("reported") if isinstance(metadata, dict) else None
+            )
 
         return reported
 

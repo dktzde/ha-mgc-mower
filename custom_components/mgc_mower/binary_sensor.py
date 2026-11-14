@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any
 
 from homeassistant.components.binary_sensor import (
@@ -35,8 +36,17 @@ def _mode(data: dict[str, Any]) -> str | None:
 
 
 def _is_connected(data: dict[str, Any]) -> bool:
-    """Return whether the mower is online."""
-    return _enabled(data.get("online"))
+    """Return whether the mower is online.
+
+    The shadow keeps "online": 1 after the mower is switched off or loses power
+    or Wi-Fi. So "shutdown" and a mower that does not answer a status request
+    (see coordinator) count as not connected.
+    """
+    if not _enabled(data.get("online")):
+        return False
+    if _mode(data) == "shutdown":
+        return False
+    return data.get("_device_responding", True) is not False
 
 
 def _is_charging(data: dict[str, Any]) -> bool:
@@ -159,6 +169,13 @@ class HandwiseBinarySensorEntity(
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return compact attributes."""
-        return {
+        attributes: dict[str, Any] = {
             "serial_number": self.coordinator.client.serial_number,
         }
+        if self.entity_description.key == "connection":
+            report_time = self.coordinator.reported_state.get("_last_report_time")
+            if isinstance(report_time, int):
+                attributes["last_report"] = datetime.fromtimestamp(
+                    report_time, tz=timezone.utc
+                ).isoformat()
+        return attributes
