@@ -1,0 +1,271 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MGC Mower",
+        "description": "Configurez votre compte cloud Handwise / Anthbot pour les tondeuses MGC01.",
+        "data": {
+          "name": "Nom",
+          "username": "E-mail / nom d'utilisateur",
+          "password": "Mot de passe",
+          "api_host": "Hôte de l'API",
+          "area_code": "Pays",
+          "scan_interval": "Intervalle d'interrogation (secondes)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Ce compte est déjà configuré."
+    },
+    "error": {
+      "cannot_connect": "Connexion ou authentification impossible.",
+      "no_devices": "Connexion réussie, mais aucun appareil compatible trouvé.",
+      "unknown": "Erreur inattendue."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options MGC Mower",
+        "description": "Lorsque la tondeuse signale un code d'événement que cette intégration ne connaît pas encore, Home Assistant affiche une notification, une seule fois par code. Elle vous invite à signaler le code avec une capture d'écran du message de l'application, afin qu'il puisse être ajouté pour tout le monde.",
+        "data": {
+          "notify_unknown_event_codes": "Notifier les codes d'événement inconnus"
+        },
+        "data_description": {
+          "notify_unknown_event_codes": "Chaque code inconnu n'est signalé qu'une seule fois. Désactivez si vous ne voulez pas ces notifications."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "mower_status": {
+        "name": "État de la tondeuse"
+      },
+      "battery_level": {
+        "name": "Niveau de batterie"
+      },
+      "cutting_height": {
+        "name": "Hauteur de coupe"
+      },
+      "mowing_area": {
+        "name": "Surface tondue"
+      },
+      "mowing_progress": {
+        "name": "Progression de la tonte"
+      },
+      "wifi_signal": {
+        "name": "Signal Wi-Fi"
+      },
+      "error_code": {
+        "name": "Code d'erreur"
+      },
+      "event_code": {
+        "name": "Code d'événement"
+      },
+      "ip_address": {
+        "name": "Adresse IP"
+      },
+      "mode": {
+        "name": "Mode"
+      },
+      "mowing_schedule": {
+        "name": "Planning de tonte"
+      },
+      "pin_status": {
+        "name": "État du code PIN"
+      },
+      "rain_effect": {
+        "name": "Effet de la pluie"
+      },
+      "mow_delay_time": {
+        "name": "Attente après la pluie"
+      },
+      "current_mow_passes": {
+        "name": "Passages de tonte actuels"
+      },
+      "map_time": {
+        "name": "Horodatage de la carte"
+      },
+      "last_path_update": {
+        "name": "Dernière mise à jour du trajet"
+      },
+      "current_path_data": {
+        "name": "Données du trajet actuel"
+      },
+      "firmware_ui_board": {
+        "name": "Firmware carte UI"
+      },
+      "firmware_motor_board": {
+        "name": "Firmware carte moteur"
+      },
+      "firmware_charger_station": {
+        "name": "Firmware station de charge"
+      },
+      "firmware_position_board": {
+        "name": "Firmware carte de positionnement"
+      }
+    },
+    "binary_sensor": {
+      "connection": {
+        "name": "Connexion"
+      },
+      "charging": {
+        "name": "En charge"
+      },
+      "rain_detection": {
+        "name": "Détection de pluie"
+      },
+      "error": {
+        "name": "Erreur"
+      },
+      "safety_trigger": {
+        "name": "Déclencheur de sécurité"
+      }
+    },
+    "button": {
+      "start_full_mow": {
+        "name": "Démarrer la tonte"
+      },
+      "pause_mow": {
+        "name": "Mettre la tonte en pause"
+      },
+      "return_to_dock": {
+        "name": "Retour à la base"
+      }
+    },
+    "number": {
+      "mow_height_setting": {
+        "name": "Hauteur de coupe"
+      },
+      "rain_wait_time_setting": {
+        "name": "Attente après la pluie"
+      }
+    },
+    "switch": {
+      "rain_detection_enabled": {
+        "name": "Détection de pluie"
+      }
+    }
+  },
+  "services": {
+    "start_full_mow": {
+      "name": "Tondre toute la surface",
+      "description": "Démarre la tonte sur la ou les tondeuses sélectionnées.",
+      "fields": {
+        "serial_number": {
+          "name": "Numéro de série",
+          "description": "Facultatif : numéro de série de la tondeuse ou liste de numéros de série."
+        }
+      }
+    },
+    "stop_mow": {
+      "name": "Arrêter la tonte",
+      "description": "Arrête toutes les tâches en cours sur la ou les tondeuses sélectionnées.",
+      "fields": {
+        "serial_number": {
+          "name": "Numéro de série",
+          "description": "Facultatif : numéro de série de la tondeuse ou liste de numéros de série."
+        }
+      }
+    },
+    "return_to_dock": {
+      "name": "Retour à la base",
+      "description": "Renvoie la ou les tondeuses sélectionnées à la station de charge.",
+      "fields": {
+        "serial_number": {
+          "name": "Numéro de série",
+          "description": "Facultatif : numéro de série de la tondeuse ou liste de numéros de série."
+        }
+      }
+    },
+    "set_mow_height": {
+      "name": "Régler la hauteur de coupe",
+      "description": "Règle la hauteur de coupe de la ou des tondeuses sélectionnées.",
+      "fields": {
+        "mow_height": {
+          "name": "Hauteur de coupe",
+          "description": "Hauteur de coupe en millimètres."
+        },
+        "serial_number": {
+          "name": "Numéro de série",
+          "description": "Facultatif : numéro de série de la tondeuse ou liste de numéros de série."
+        }
+      }
+    },
+    "set_voice_volume": {
+      "name": "Régler le volume",
+      "description": "Règle le volume des annonces vocales de la ou des tondeuses sélectionnées, de 0 à 100.",
+      "fields": {
+        "voice_volume": {
+          "name": "Volume",
+          "description": "Niveau de volume de 0 à 100."
+        },
+        "serial_number": {
+          "name": "Numéro de série",
+          "description": "Facultatif : numéro de série de la tondeuse ou liste de numéros de série."
+        }
+      }
+    },
+    "set_custom_mowing_direction": {
+      "name": "Régler une direction de tonte",
+      "description": "Règle une direction de tonte personnalisée et active ou désactive la direction adaptative.",
+      "fields": {
+        "mow_direction": {
+          "name": "Direction de tonte",
+          "description": "Direction en degrés (0 à 180)."
+        },
+        "enable_custom_direction": {
+          "name": "Activer la direction personnalisée",
+          "description": "Active ou désactive la direction de tonte personnalisée."
+        },
+        "serial_number": {
+          "name": "Numéro de série",
+          "description": "Facultatif : numéro de série de la tondeuse ou liste de numéros de série."
+        }
+      }
+    },
+    "start_zone_mow": {
+      "name": "Tondre des zones",
+      "description": "Démarre la tonte d'une ou plusieurs zones manuelles sur la ou les tondeuses sélectionnées.",
+      "fields": {
+        "zones": {
+          "name": "Zones",
+          "description": "ID de zone, nom de zone, liste séparée par des virgules ou liste YAML de zones manuelles."
+        },
+        "serial_number": {
+          "name": "Numéro de série",
+          "description": "Facultatif : numéro de série de la tondeuse ou liste de numéros de série."
+        }
+      }
+    },
+    "start_auto_zone_mow": {
+      "name": "Tondre des zones auto",
+      "description": "Démarre la tonte d'une ou plusieurs zones automatiques sur la ou les tondeuses sélectionnées.",
+      "fields": {
+        "auto_zones": {
+          "name": "Zones auto",
+          "description": "ID de zone auto, nom, liste séparée par des virgules ou liste YAML de zones auto."
+        },
+        "serial_number": {
+          "name": "Numéro de série",
+          "description": "Facultatif : numéro de série de la tondeuse ou liste de numéros de série."
+        }
+      }
+    },
+    "set_mowing_schedule": {
+      "name": "Définir le planning de tonte",
+      "description": "Remplace le planning de tonte hebdomadaire enregistré dans la tondeuse (comme le planning de l'application R HOME). Chaque entrée se répète chaque semaine. Une liste vide efface le planning. Testé avec des tondeuses MGC (Redkey MGC1000).",
+      "fields": {
+        "entries": {
+          "name": "Entrées",
+          "description": "Liste des entrées du planning. Chaque entrée contient weekday (mon-sun) ou weekdays (liste), start (HH:MM), end facultatif (HH:MM, vide = jusqu'à la fin), cutter_height (30-70 mm par pas de 5 mm) et direction (perpendicular, parallel ou cross)."
+        },
+        "serial_number": {
+          "name": "Numéro de série",
+          "description": "Facultatif : numéro de série de la tondeuse ou liste de numéros de série."
+        }
+      }
+    }
+  }
+}
