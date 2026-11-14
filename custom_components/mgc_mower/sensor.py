@@ -22,6 +22,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import HandwiseGenieDataUpdateCoordinator
+from .event_codes import event_code_description, is_known_event_code
 from .schedule import schedule_entries, schedule_summary
 
 
@@ -411,6 +412,11 @@ class HandwiseSensorEntity(
                     "curpath_decoded_bytes": _curpath_decoded_length(state),
                 }
             )
+
+        elif key == "event_code":
+            value = state.get("event_code")
+            attributes["description"] = event_code_description(value)
+            attributes["known"] = is_known_event_code(value)
 
         elif key == "mowing_schedule":
             entries = schedule_entries(state) or []

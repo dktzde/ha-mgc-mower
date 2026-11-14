@@ -35,12 +35,24 @@
 {{- ns.parts | sort | join(';') -}}
 {%- endmacro -%}
 
-{#- Readable text, e.g. "Mon 17:00–19:00 cross 55 mm · Wed 17:00–19:00 perpendicular 55 mm" -#}
-{%- macro mgc_schedule_text(entries) -%}
-{%- set day_names = {'mon': 'Mon', 'tue': 'Tue', 'wed': 'Wed', 'thu': 'Thu', 'fri': 'Fri', 'sat': 'Sat', 'sun': 'Sun'} -%}
+{#- Readable text, e.g. "Mon 17:00–19:00 cross 55 mm · Wed 17:00–19:00 perpendicular 55 mm".
+    lang: 'en' (default), 'de' or 'fr' -#}
+{%- macro mgc_schedule_text(entries, lang='en') -%}
+{%- set texts = {
+  'en': {'days': {'mon': 'Mon', 'tue': 'Tue', 'wed': 'Wed', 'thu': 'Thu', 'fri': 'Fri', 'sat': 'Sat', 'sun': 'Sun'},
+         'directions': {'perpendicular': 'perpendicular', 'parallel': 'parallel', 'cross': 'cross'},
+         'until_finished': 'until finished', 'empty': 'no day ticked – no scheduled mowing'},
+  'de': {'days': {'mon': 'Mo', 'tue': 'Di', 'wed': 'Mi', 'thu': 'Do', 'fri': 'Fr', 'sat': 'Sa', 'sun': 'So'},
+         'directions': {'perpendicular': 'senkrecht', 'parallel': 'parallel', 'cross': 'Kreuz'},
+         'until_finished': 'bis fertig', 'empty': 'kein Tag gewählt – kein Mähplan'},
+  'fr': {'days': {'mon': 'lun', 'tue': 'mar', 'wed': 'mer', 'thu': 'jeu', 'fri': 'ven', 'sat': 'sam', 'sun': 'dim'},
+         'directions': {'perpendicular': 'perpendiculaire', 'parallel': 'parallèle', 'cross': 'croisé'},
+         'until_finished': "jusqu'à la fin", 'empty': 'aucun jour coché – pas de tonte planifiée'},
+} -%}
+{%- set t = texts.get(lang, texts['en']) -%}
 {%- set ns = namespace(parts=[]) -%}
 {%- for e in entries or [] -%}
-  {%- set ns.parts = ns.parts + [day_names.get(e.weekday, e.weekday) ~ ' ' ~ e.start ~ '–' ~ (e.end or 'until finished') ~ ' ' ~ e.direction ~ ' ' ~ e.cutter_height ~ ' mm'] -%}
+  {%- set ns.parts = ns.parts + [t.days.get(e.weekday, e.weekday) ~ ' ' ~ e.start ~ '–' ~ (e.end or t.until_finished) ~ ' ' ~ t.directions.get(e.direction, e.direction) ~ ' ' ~ e.cutter_height ~ ' mm'] -%}
 {%- endfor -%}
-{{- ns.parts | join(' · ') if ns.parts else 'no day ticked – no scheduled mowing' -}}
+{{- ns.parts | join(' · ') if ns.parts else t.empty -}}
 {%- endmacro -%}

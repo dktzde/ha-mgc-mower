@@ -6,6 +6,15 @@ Dates are release dates (YYYY-MM-DD).
 
 ## MGC Mower, maintained by [dktzde](https://github.com/dktzde) (from 0.2.0)
 
+### 0.3.0 – 2026-11-14
+
+- **Added:** notification for unknown event codes. When the mower reports an `event_code` the integration does not know yet, Home Assistant shows a notification once per code (English, French or German). It links to a pre-filled GitHub issue (code, previous code, mode, model, firmware, versions; no serial number, IP address or account data) and asks for a screenshot or the text of the app message. Can be turned off in the integration options; on by default.
+- **Added:** integration options (*Configure*) with the switch for these notifications.
+- **Added:** attributes `description` (app text) and `known` on the event code sensor; known codes in `event_codes.py`.
+- **Added:** English and French translations, German completed (entities, options, services). Existing entity IDs do not change.
+- **Extras:** example dashboard and schedule package in German and French; the schedule text macro takes a language (`en`, `de`, `fr`).
+- **Docs:** issue form "Unknown event code".
+
 ### 0.2.2 – 2026-11-14
 
 - **Fixed:** the connection sensor stayed "connected" after the mower was switched off or lost power or Wi-Fi, because the cloud keeps the last `online` value. It is now off when the mower reports `shutdown`, and when the mower has been silent for 6 hours and does not answer one status request (`get_all_props`, MGC firmware only). After that it is not asked again; the sensor turns on when the mower reports on its own. A docked mower that is online is asked about every 6 hours.

@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "MGC Mower",
-        "description": "Konfiguriere dein Handwise-/Anthbot-Cloud-Konto für MGC01-Mäher.",
+        "description": "Richte dein Handwise-/Anthbot-Cloudkonto für MGC01-Mäher ein.",
         "data": {
           "name": "Name",
           "username": "E-Mail / Benutzername",
@@ -15,12 +15,26 @@
       }
     },
     "abort": {
-      "already_configured": "Dieses Konto ist bereits konfiguriert."
+      "already_configured": "Dieses Konto ist bereits eingerichtet."
     },
     "error": {
       "cannot_connect": "Verbindung oder Anmeldung fehlgeschlagen.",
-      "no_devices": "Anmeldung erfolgreich, aber keine kompatiblen Geräte gefunden.",
+      "no_devices": "Anmeldung erfolgreich, aber keine passenden Geräte gefunden.",
       "unknown": "Unerwarteter Fehler."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MGC Mower Optionen",
+        "description": "Meldet der Mäher einen Ereigniscode, den diese Integration noch nicht kennt, zeigt Home Assistant einmal je Code eine Benachrichtigung. Sie bittet darum, den Code mit einem Screenshot der App-Meldung zu melden, damit er für alle ergänzt werden kann.",
+        "data": {
+          "notify_unknown_event_codes": "Bei unbekannten Ereigniscodes benachrichtigen"
+        },
+        "data_description": {
+          "notify_unknown_event_codes": "Jeder unbekannte Code wird nur einmal gemeldet. Ausschalten, wenn du diese Benachrichtigungen nicht möchtest."
+        }
+      }
     }
   },
   "entity": {
@@ -37,11 +51,20 @@
       "mowing_area": {
         "name": "Mähfläche (Sitzung)"
       },
-      "mowing_area_total": {
-        "name": "Mähfläche (Gesamt)"
-      },
       "mowing_progress": {
         "name": "Mähfortschritt"
+      },
+      "wifi_signal": {
+        "name": "WLAN-Signal"
+      },
+      "error_code": {
+        "name": "Fehlercode"
+      },
+      "event_code": {
+        "name": "Ereigniscode"
+      },
+      "ip_address": {
+        "name": "IP-Adresse"
       },
       "mode": {
         "name": "Modus"
@@ -49,23 +72,38 @@
       "mowing_schedule": {
         "name": "Mähplan"
       },
-      "error_code": {
-        "name": "Fehlercode"
+      "pin_status": {
+        "name": "PIN-Status"
       },
-      "ip_address": {
-        "name": "IP-Adresse"
+      "rain_effect": {
+        "name": "Regenwirkung"
       },
-      "wifi_signal": {
-        "name": "WLAN-Signal"
+      "mow_delay_time": {
+        "name": "Regen-Wartezeit"
+      },
+      "current_mow_passes": {
+        "name": "Aktuelle Mähdurchgänge"
+      },
+      "map_time": {
+        "name": "Kartenzeit"
+      },
+      "last_path_update": {
+        "name": "Letzte Pfadaktualisierung"
       },
       "current_path_data": {
         "name": "Aktuelle Pfaddaten"
       },
-      "zones": {
-        "name": "Zonen"
+      "firmware_ui_board": {
+        "name": "Firmware UI-Platine"
       },
-      "auto_zones": {
-        "name": "Auto-Zonen"
+      "firmware_motor_board": {
+        "name": "Firmware Motorplatine"
+      },
+      "firmware_charger_station": {
+        "name": "Firmware Ladestation"
+      },
+      "firmware_position_board": {
+        "name": "Firmware Positionsplatine"
       }
     },
     "binary_sensor": {
@@ -78,9 +116,6 @@
       "rain_detection": {
         "name": "Regenerkennung"
       },
-      "pin_ok": {
-        "name": "PIN OK"
-      },
       "error": {
         "name": "Fehler"
       },
@@ -92,8 +127,8 @@
       "start_full_mow": {
         "name": "Mähen starten"
       },
-      "stop_mow": {
-        "name": "Mähen stoppen"
+      "pause_mow": {
+        "name": "Mähen pausieren"
       },
       "return_to_dock": {
         "name": "Zur Ladestation zurückkehren"
@@ -105,22 +140,131 @@
       },
       "rain_wait_time_setting": {
         "name": "Regen-Wartezeit"
-      },
-      "mow_direction_setting": {
-        "name": "Mährichtung"
-      },
-      "current_mow_times": {
-        "name": "Aktuelle Mähdurchgänge"
       }
     },
     "switch": {
       "rain_detection_enabled": {
         "name": "Regenerkennung"
       }
+    }
+  },
+  "services": {
+    "start_full_mow": {
+      "name": "Ganze Fläche mähen",
+      "description": "Startet das Mähen auf den gewählten Mähern.",
+      "fields": {
+        "serial_number": {
+          "name": "Seriennummer",
+          "description": "Optional: Seriennummer des Mähers oder Liste von Seriennummern."
+        }
+      }
     },
-    "lawn_mower": {
-      "none": {
-        "name": "Mäher"
+    "stop_mow": {
+      "name": "Mähen stoppen",
+      "description": "Stoppt alle laufenden Aufgaben der gewählten Mäher.",
+      "fields": {
+        "serial_number": {
+          "name": "Seriennummer",
+          "description": "Optional: Seriennummer des Mähers oder Liste von Seriennummern."
+        }
+      }
+    },
+    "return_to_dock": {
+      "name": "Zur Ladestation",
+      "description": "Schickt die gewählten Mäher zurück zur Ladestation.",
+      "fields": {
+        "serial_number": {
+          "name": "Seriennummer",
+          "description": "Optional: Seriennummer des Mähers oder Liste von Seriennummern."
+        }
+      }
+    },
+    "set_mow_height": {
+      "name": "Schnitthöhe setzen",
+      "description": "Setzt die Schnitthöhe der gewählten Mäher.",
+      "fields": {
+        "mow_height": {
+          "name": "Schnitthöhe",
+          "description": "Schnitthöhe in Millimetern."
+        },
+        "serial_number": {
+          "name": "Seriennummer",
+          "description": "Optional: Seriennummer des Mähers oder Liste von Seriennummern."
+        }
+      }
+    },
+    "set_voice_volume": {
+      "name": "Lautstärke setzen",
+      "description": "Setzt die Lautstärke der Sprachansagen der gewählten Mäher, 0 bis 100.",
+      "fields": {
+        "voice_volume": {
+          "name": "Lautstärke",
+          "description": "Lautstärke von 0 bis 100."
+        },
+        "serial_number": {
+          "name": "Seriennummer",
+          "description": "Optional: Seriennummer des Mähers oder Liste von Seriennummern."
+        }
+      }
+    },
+    "set_custom_mowing_direction": {
+      "name": "Eigene Mährichtung setzen",
+      "description": "Setzt eine eigene Mährichtung und schaltet die angepasste Richtung ein oder aus.",
+      "fields": {
+        "mow_direction": {
+          "name": "Mährichtung",
+          "description": "Richtung in Grad (0 bis 180)."
+        },
+        "enable_custom_direction": {
+          "name": "Eigene Richtung einschalten",
+          "description": "Eigene Mährichtung ein- oder ausschalten."
+        },
+        "serial_number": {
+          "name": "Seriennummer",
+          "description": "Optional: Seriennummer des Mähers oder Liste von Seriennummern."
+        }
+      }
+    },
+    "start_zone_mow": {
+      "name": "Zonen mähen",
+      "description": "Startet das Mähen einer oder mehrerer manueller Zonen auf den gewählten Mähern.",
+      "fields": {
+        "zones": {
+          "name": "Zonen",
+          "description": "Zonen-ID, Zonenname, kommagetrennte Liste oder YAML-Liste manueller Zonen."
+        },
+        "serial_number": {
+          "name": "Seriennummer",
+          "description": "Optional: Seriennummer des Mähers oder Liste von Seriennummern."
+        }
+      }
+    },
+    "start_auto_zone_mow": {
+      "name": "Auto-Zonen mähen",
+      "description": "Startet das Mähen einer oder mehrerer Auto-Zonen auf den gewählten Mähern.",
+      "fields": {
+        "auto_zones": {
+          "name": "Auto-Zonen",
+          "description": "Auto-Zonen-ID, Name, kommagetrennte Liste oder YAML-Liste von Auto-Zonen."
+        },
+        "serial_number": {
+          "name": "Seriennummer",
+          "description": "Optional: Seriennummer des Mähers oder Liste von Seriennummern."
+        }
+      }
+    },
+    "set_mowing_schedule": {
+      "name": "Mähplan setzen",
+      "description": "Ersetzt den im Mäher gespeicherten Wochen-Mähplan (wie der Plan in der R-HOME-App). Jeder Eintrag wiederholt sich wöchentlich. Eine leere Liste löscht den Plan. Getestet mit MGC-Mähern (Redkey MGC1000).",
+      "fields": {
+        "entries": {
+          "name": "Einträge",
+          "description": "Liste der Planeinträge. Jeder Eintrag hat weekday (mon-sun) oder weekdays (Liste), start (HH:MM), optional end (HH:MM, leer = bis fertig), cutter_height (30-70 mm in 5-mm-Schritten) und direction (perpendicular, parallel oder cross)."
+        },
+        "serial_number": {
+          "name": "Seriennummer",
+          "description": "Optional: Seriennummer des Mähers oder Liste von Seriennummern."
+        }
       }
     }
   }
