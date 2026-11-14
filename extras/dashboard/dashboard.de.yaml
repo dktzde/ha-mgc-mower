@@ -1,0 +1,261 @@
+# MGC Mower Beispiel-Dashboard (Deutsch): Steuerung, Regen, Zustand und Wochen-Mähplan.
+# Einstellungen → Dashboards → Dashboard hinzufügen → öffnen → ⋮ → Bearbeiten → ⋮ → Raw-Konfigurationseditor → diese Datei einfügen.
+# "my_mower" durch den Präfix deines Mähers ersetzen (lawn_mower.<präfix>).
+# Die Entitäts-IDs passen zu einer Integration, die mit Home Assistant auf Deutsch eingerichtet wurde (siehe README.md).
+# Der Abschnitt "Mähplan" braucht mgc_mower_schedule.de.yaml + .jinja (siehe README.md); ohne sie den Abschnitt löschen.
+
+title: Rasenmäher
+views:
+- title: Rasenmäher
+  path: rasenmaeher
+  icon: mdi:robot-mower
+  type: sections
+  max_columns: 2
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Rasenmäher
+      heading_style: title
+      icon: mdi:robot-mower
+    - type: tile
+      entity: lawn_mower.my_mower
+      name: Mäher
+      state_content:
+      - state
+      - last_changed
+    - type: tile
+      entity: sensor.my_mower_akkustand
+      name: Akku
+    - type: tile
+      entity: sensor.my_mower_maherstatus
+      name: Status
+    - type: tile
+      entity: sensor.my_mower_mahfortschritt
+      name: Fortschritt
+    - type: tile
+      entity: button.my_mower_mahen_starten
+      name: Mähen starten
+      icon: mdi:play
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_mahen_starten
+        confirmation:
+          text: Mäher jetzt losschicken? Die Messer laufen an.
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_mahen_starten
+        confirmation:
+          text: Mäher jetzt losschicken? Die Messer laufen an.
+    - type: tile
+      entity: button.my_mower_mahen_pausieren
+      name: Pause
+      icon: mdi:pause
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_mahen_pausieren
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_mahen_pausieren
+    - type: tile
+      entity: button.my_mower_zur_ladestation_zuruckkehren
+      name: Zur Ladestation
+      icon: mdi:home-import-outline
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_zur_ladestation_zuruckkehren
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_zur_ladestation_zuruckkehren
+    - type: heading
+      heading: Regen
+      heading_style: subtitle
+      icon: mdi:weather-pouring
+    - type: tile
+      entity: switch.my_mower_regenerkennung
+      name: Regenerkennung
+    - type: tile
+      entity: number.my_mower_regen_wartezeit
+      name: Warten nach Regen
+      icon: mdi:timer-sand
+    - type: heading
+      heading: Zustand
+      heading_style: subtitle
+      icon: mdi:information-outline
+    - type: tile
+      entity: binary_sensor.my_mower_verbindung
+      name: Verbindung
+    - type: tile
+      entity: sensor.my_mower_wlan_signal
+      name: WLAN-Signal
+    - type: tile
+      entity: binary_sensor.my_mower_fehler
+      name: Fehler
+    - type: tile
+      entity: sensor.my_mower_fehlercode
+      name: Fehlercode
+    - type: tile
+      entity: binary_sensor.my_mower_sicherheitsausloser
+      name: Sicherheitsauslöser
+    - type: tile
+      entity: sensor.my_mower_pin_status
+      name: PIN
+    - type: tile
+      entity: sensor.my_mower_schnitthohe
+      name: Schnitthöhe
+    - type: tile
+      entity: sensor.my_mower_mahflache_sitzung
+      name: Gemähte Fläche (Lauf)
+    - type: history-graph
+      title: Akku und Mähen (48 h)
+      hours_to_show: 48
+      entities:
+      - entity: sensor.my_mower_akkustand
+        name: Akku
+      - entity: lawn_mower.my_mower
+        name: Mäher
+      grid_options:
+        columns: 12
+  - type: grid
+    cards:
+    - type: heading
+      heading: Mähplan (Woche)
+      heading_style: title
+      icon: mdi:calendar-clock
+    - type: markdown
+      content: |-
+        **Einstellung:** {{ states('sensor.mahplan_einstellung') }}
+        **Im Mäher:** {{ states('sensor.mahplan_im_maher') }}
+        {% if is_state('binary_sensor.mahplan_ubertragen', 'on') -%}
+        ✅ Im Mäher gespeichert – er mäht selbstständig, auch ohne Home Assistant.
+        {%- elif state_attr('automation.mgc_mower_mahplan_nach_anderung_senden', 'current') | int(0) > 0 or state_attr('script.mgc_schedule_send', 'current') | int(0) > 0 -%}
+        ⏳ Wird an den Mäher gesendet …
+        {%- else -%}
+        ⚠️ Weicht ab (z. B. in der App geändert) – **Jetzt senden** übernimmt die Einstellung.
+        {%- endif %}
+
+        <small>Mo = Kreuz, die übrigen Tage abwechselnd senkrecht / parallel · jede Woche · Änderungen gehen nach 15 s automatisch an den Mäher.</small>
+    - type: tile
+      entity: input_boolean.mgc_schedule_mon
+      name: Mo
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_tue
+      name: Di
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_wed
+      name: Mi
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_thu
+      name: Do
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_fri
+      name: Fr
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_sat
+      name: Sa
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_sun
+      name: So
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_datetime.mgc_schedule_start
+      name: Start
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: input_datetime.mgc_schedule_end
+      name: Ende
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: input_boolean.mgc_schedule_until_finished
+      name: Bis fertig (ohne Endzeit)
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 12
+    - type: tile
+      entity: input_number.mgc_schedule_height
+      name: Schnitthöhe für alle Tage
+      features:
+      - type: numeric-input
+        style: slider
+      grid_options:
+        columns: 12
+    - type: tile
+      entity: script.mgc_schedule_send
+      name: Jetzt senden
+      icon: mdi:send-clock
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: script.mgc_schedule_send
+        confirmation:
+          text: Mähplan jetzt an den Mäher senden? Der Plan im Mäher (auch einer aus der App) wird ersetzt.
+      grid_options:
+        columns: 12

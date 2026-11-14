@@ -1,0 +1,138 @@
+# Exemple MGC Mower (français) : planning de tonte hebdomadaire réglé depuis le tableau de bord.
+# Cochez les jours, choisissez une heure de début (heure de fin ou "jusqu'à la fin") et une hauteur de coupe pour tous les jours.
+# La règle de direction se trouve dans custom_templates/mgc_mower_schedule.jinja.
+# Le planning est enregistré dans la tondeuse (service mgc_mower.set_mowing_schedule, même commande que l'application)
+# et y fonctionne sans Home Assistant. Une modification dans l'application le remplace, et inversement.
+#
+# Installation : voir extras/dashboard/README.md. Remplacez "my_mower" par le préfixe de votre tondeuse.
+# Les ID d'entité correspondent à une intégration ajoutée avec Home Assistant en français.
+# N'utilisez qu'une seule version linguistique du paquet (mêmes ID d'entrées).
+
+# Jours
+input_boolean:
+  mgc_schedule_mon:
+    name: "Planning de tonte lun"
+    icon: mdi:calendar-check
+  mgc_schedule_tue:
+    name: "Planning de tonte mar"
+    icon: mdi:calendar-check
+  mgc_schedule_wed:
+    name: "Planning de tonte mer"
+    icon: mdi:calendar-check
+  mgc_schedule_thu:
+    name: "Planning de tonte jeu"
+    icon: mdi:calendar-check
+  mgc_schedule_fri:
+    name: "Planning de tonte ven"
+    icon: mdi:calendar-check
+  mgc_schedule_sat:
+    name: "Planning de tonte sam"
+    icon: mdi:calendar-check
+  mgc_schedule_sun:
+    name: "Planning de tonte dim"
+    icon: mdi:calendar-check
+  # Activé = pas d'heure de fin, tondre jusqu'à ce que la pelouse soit finie (application : "jusqu'à la fin")
+  mgc_schedule_until_finished:
+    name: "Planning de tonte jusqu'à la fin"
+    icon: mdi:flag-checkered
+
+# Heure pour tous les jours
+input_datetime:
+  mgc_schedule_start:
+    name: "Planning de tonte début"
+    has_date: false
+    has_time: true
+    icon: mdi:clock-start
+  mgc_schedule_end:
+    name: "Planning de tonte fin"
+    has_date: false
+    has_time: true
+    icon: mdi:clock-end
+
+# Hauteur de coupe pour tous les jours (comme l'application : 30–70 mm par pas de 5 mm)
+input_number:
+  mgc_schedule_height:
+    name: "Planning de tonte hauteur de coupe"
+    min: 30
+    max: 70
+    step: 5
+    unit_of_measurement: mm
+    mode: slider
+    icon: mdi:grass
+
+# Aperçu de ce que HA enverrait, et comparaison avec le planning de la tondeuse
+template:
+  - sensor:
+      - name: "Planning de tonte réglage"
+        unique_id: mgc_schedule_setting
+        icon: mdi:calendar-edit
+        state: >-
+          {% from 'mgc_mower_schedule.jinja' import mgc_schedule_entries, mgc_schedule_text %}
+          {{ mgc_schedule_text(mgc_schedule_entries() | from_json, 'fr') | truncate(250, true, '…') }}
+      - name: "Planning de tonte dans la tondeuse"
+        unique_id: mgc_schedule_on_mower
+        icon: mdi:robot-mower
+        availability: "{{ has_value('sensor.my_mower_planning_de_tonte') }}"
+        state: >-
+          {% from 'mgc_mower_schedule.jinja' import mgc_schedule_text %}
+          {{ mgc_schedule_text(state_attr('sensor.my_mower_planning_de_tonte', 'entries'), 'fr') | truncate(250, true, '…') }}
+    binary_sensor:
+      # Activé = la tondeuse a enregistré exactement le planning du tableau de bord
+      - name: "Planning de tonte synchronisé"
+        unique_id: mgc_schedule_synced
+        icon: mdi:calendar-sync
+        availability: "{{ has_value('sensor.my_mower_planning_de_tonte') }}"
+        state: >-
+          {% from 'mgc_mower_schedule.jinja' import mgc_schedule_entries, mgc_schedule_key %}
+          {{ mgc_schedule_key(mgc_schedule_entries() | from_json)
+             == mgc_schedule_key(state_attr('sensor.my_mower_planning_de_tonte', 'entries')) }}
+
+# Envoie le planning des entrées à la tondeuse (remplace tout le planning de la tondeuse)
+script:
+  mgc_schedule_send:
+    alias: "Envoyer le planning de tonte à la tondeuse"
+    icon: mdi:send-clock
+    mode: queued
+    sequence:
+      - variables:
+          entries: >-
+            {% from 'mgc_mower_schedule.jinja' import mgc_schedule_entries %}
+            {{ mgc_schedule_entries() | from_json }}
+      - action: mgc_mower.set_mowing_schedule
+        target:
+          entity_id: lawn_mower.my_mower
+        data:
+          entries: "{{ entries }}"
+
+# Après une modification dans le tableau de bord, attendre 15 s (d'autres modifications), puis envoyer –
+# seulement si le planning de la tondeuse diffère. Rien n'est envoyé au démarrage de HA (entrées restaurées).
+automation:
+  - id: mgc_schedule_send_after_change
+    alias: "MGC Mower : envoyer le planning après modification"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id:
+          - input_boolean.mgc_schedule_mon
+          - input_boolean.mgc_schedule_tue
+          - input_boolean.mgc_schedule_wed
+          - input_boolean.mgc_schedule_thu
+          - input_boolean.mgc_schedule_fri
+          - input_boolean.mgc_schedule_sat
+          - input_boolean.mgc_schedule_sun
+          - input_boolean.mgc_schedule_until_finished
+          - input_datetime.mgc_schedule_start
+          - input_datetime.mgc_schedule_end
+          - input_number.mgc_schedule_height
+    conditions:
+      - condition: template
+        value_template: >-
+          {{ trigger.from_state is not none
+             and trigger.from_state.state not in ['unknown', 'unavailable']
+             and trigger.to_state.state not in ['unknown', 'unavailable'] }}
+    actions:
+      - delay: 15
+      - condition: state
+        entity_id: binary_sensor.planning_de_tonte_synchronise
+        state: "off"
+      - action: script.mgc_schedule_send

@@ -1,0 +1,261 @@
+# Tableau de bord d'exemple MGC Mower (français) : commande, pluie, état et planning de tonte hebdomadaire.
+# Paramètres → Tableaux de bord → Ajouter un tableau de bord → l'ouvrir → ⋮ → Modifier → ⋮ → Éditeur de configuration brute → coller ce fichier.
+# Remplacez "my_mower" par le préfixe de votre tondeuse (lawn_mower.<préfixe>).
+# Les ID d'entité correspondent à une intégration ajoutée avec Home Assistant en français (voir README.md).
+# La section "Planning de tonte" nécessite mgc_mower_schedule.fr.yaml + .jinja (voir README.md) ; sans eux, supprimez cette section.
+
+title: Tondeuse
+views:
+- title: Tondeuse
+  path: tondeuse
+  icon: mdi:robot-mower
+  type: sections
+  max_columns: 2
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Tondeuse
+      heading_style: title
+      icon: mdi:robot-mower
+    - type: tile
+      entity: lawn_mower.my_mower
+      name: Tondeuse
+      state_content:
+      - state
+      - last_changed
+    - type: tile
+      entity: sensor.my_mower_niveau_de_batterie
+      name: Batterie
+    - type: tile
+      entity: sensor.my_mower_etat_de_la_tondeuse
+      name: État
+    - type: tile
+      entity: sensor.my_mower_progression_de_la_tonte
+      name: Progression
+    - type: tile
+      entity: button.my_mower_demarrer_la_tonte
+      name: Démarrer la tonte
+      icon: mdi:play
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_demarrer_la_tonte
+        confirmation:
+          text: Envoyer la tondeuse maintenant ? Les lames vont démarrer.
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_demarrer_la_tonte
+        confirmation:
+          text: Envoyer la tondeuse maintenant ? Les lames vont démarrer.
+    - type: tile
+      entity: button.my_mower_mettre_la_tonte_en_pause
+      name: Pause
+      icon: mdi:pause
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_mettre_la_tonte_en_pause
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_mettre_la_tonte_en_pause
+    - type: tile
+      entity: button.my_mower_retour_a_la_base
+      name: Retour à la base
+      icon: mdi:home-import-outline
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_retour_a_la_base
+      icon_tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.my_mower_retour_a_la_base
+    - type: heading
+      heading: Pluie
+      heading_style: subtitle
+      icon: mdi:weather-pouring
+    - type: tile
+      entity: switch.my_mower_detection_de_pluie
+      name: Détection de pluie
+    - type: tile
+      entity: number.my_mower_attente_apres_la_pluie
+      name: Attente après la pluie
+      icon: mdi:timer-sand
+    - type: heading
+      heading: Informations
+      heading_style: subtitle
+      icon: mdi:information-outline
+    - type: tile
+      entity: binary_sensor.my_mower_connexion
+      name: Connexion
+    - type: tile
+      entity: sensor.my_mower_signal_wi_fi
+      name: Signal Wi-Fi
+    - type: tile
+      entity: binary_sensor.my_mower_erreur
+      name: Erreur
+    - type: tile
+      entity: sensor.my_mower_code_d_erreur
+      name: Code d'erreur
+    - type: tile
+      entity: binary_sensor.my_mower_declencheur_de_securite
+      name: Déclencheur de sécurité
+    - type: tile
+      entity: sensor.my_mower_etat_du_code_pin
+      name: PIN
+    - type: tile
+      entity: sensor.my_mower_hauteur_de_coupe
+      name: Hauteur de coupe
+    - type: tile
+      entity: sensor.my_mower_surface_tondue
+      name: Surface tondue (session)
+    - type: history-graph
+      title: Batterie et tonte (48 h)
+      hours_to_show: 48
+      entities:
+      - entity: sensor.my_mower_niveau_de_batterie
+        name: Batterie
+      - entity: lawn_mower.my_mower
+        name: Tondeuse
+      grid_options:
+        columns: 12
+  - type: grid
+    cards:
+    - type: heading
+      heading: Planning de tonte (semaine)
+      heading_style: title
+      icon: mdi:calendar-clock
+    - type: markdown
+      content: |-
+        **Réglage :** {{ states('sensor.planning_de_tonte_reglage') }}
+        **Dans la tondeuse :** {{ states('sensor.planning_de_tonte_dans_la_tondeuse') }}
+        {% if is_state('binary_sensor.planning_de_tonte_synchronise', 'on') -%}
+        ✅ Enregistré dans la tondeuse – elle tond seule, même sans Home Assistant.
+        {%- elif state_attr('automation.mgc_mower_envoyer_le_planning_apres_modification', 'current') | int(0) > 0 or state_attr('script.mgc_schedule_send', 'current') | int(0) > 0 -%}
+        ⏳ Envoi à la tondeuse …
+        {%- else -%}
+        ⚠️ Différent (p. ex. modifié dans l'application) – **Envoyer maintenant** applique le réglage.
+        {%- endif %}
+
+        <small>Lun = croisé, les autres jours alternent perpendiculaire / parallèle · chaque semaine · les modifications sont envoyées automatiquement à la tondeuse après 15 s.</small>
+    - type: tile
+      entity: input_boolean.mgc_schedule_mon
+      name: Lun
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_tue
+      name: Mar
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_wed
+      name: Mer
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_thu
+      name: Jeu
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_fri
+      name: Ven
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_sat
+      name: Sam
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_boolean.mgc_schedule_sun
+      name: Dim
+      vertical: true
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 3
+    - type: tile
+      entity: input_datetime.mgc_schedule_start
+      name: Début
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: input_datetime.mgc_schedule_end
+      name: Fin
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: input_boolean.mgc_schedule_until_finished
+      name: Jusqu'à la fin (sans heure de fin)
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 12
+    - type: tile
+      entity: input_number.mgc_schedule_height
+      name: Hauteur de coupe pour tous les jours
+      features:
+      - type: numeric-input
+        style: slider
+      grid_options:
+        columns: 12
+    - type: tile
+      entity: script.mgc_schedule_send
+      name: Envoyer maintenant
+      icon: mdi:send-clock
+      hide_state: true
+      tap_action:
+        action: perform-action
+        perform_action: script.mgc_schedule_send
+        confirmation:
+          text: Envoyer le planning à la tondeuse maintenant ? Le planning de la tondeuse (aussi celui de l'application) est remplacé.
+      grid_options:
+        columns: 12

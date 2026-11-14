@@ -1,0 +1,138 @@
+# MGC Mower Beispiel (Deutsch): Wochen-Mähplan, im Dashboard eingestellt.
+# Tage ankreuzen, eine Startzeit (Endzeit oder "bis fertig") und eine Schnitthöhe für alle Tage wählen.
+# Die Regel für die Mährichtung steht in custom_templates/mgc_mower_schedule.jinja.
+# Der Plan wird im Mäher gespeichert (Dienst mgc_mower.set_mowing_schedule, derselbe Befehl wie die App)
+# und läuft dort ohne Home Assistant. Eine Änderung in der App ersetzt ihn, und umgekehrt.
+#
+# Einrichtung: siehe extras/dashboard/README.md. "my_mower" durch den Präfix deines Mähers ersetzen.
+# Die Entitäts-IDs passen zu einer Integration, die mit Home Assistant auf Deutsch eingerichtet wurde.
+# Nur eine Sprachfassung des Pakets verwenden (gleiche Helfer-IDs).
+
+# Tage
+input_boolean:
+  mgc_schedule_mon:
+    name: "Mähplan Mo"
+    icon: mdi:calendar-check
+  mgc_schedule_tue:
+    name: "Mähplan Di"
+    icon: mdi:calendar-check
+  mgc_schedule_wed:
+    name: "Mähplan Mi"
+    icon: mdi:calendar-check
+  mgc_schedule_thu:
+    name: "Mähplan Do"
+    icon: mdi:calendar-check
+  mgc_schedule_fri:
+    name: "Mähplan Fr"
+    icon: mdi:calendar-check
+  mgc_schedule_sat:
+    name: "Mähplan Sa"
+    icon: mdi:calendar-check
+  mgc_schedule_sun:
+    name: "Mähplan So"
+    icon: mdi:calendar-check
+  # An = keine Endzeit, mähen bis der Rasen fertig ist (App: "bis fertig")
+  mgc_schedule_until_finished:
+    name: "Mähplan bis fertig"
+    icon: mdi:flag-checkered
+
+# Uhrzeit für alle Tage
+input_datetime:
+  mgc_schedule_start:
+    name: "Mähplan Start"
+    has_date: false
+    has_time: true
+    icon: mdi:clock-start
+  mgc_schedule_end:
+    name: "Mähplan Ende"
+    has_date: false
+    has_time: true
+    icon: mdi:clock-end
+
+# Schnitthöhe für alle Tage (wie die App: 30–70 mm in 5-mm-Schritten)
+input_number:
+  mgc_schedule_height:
+    name: "Mähplan Schnitthöhe"
+    min: 30
+    max: 70
+    step: 5
+    unit_of_measurement: mm
+    mode: slider
+    icon: mdi:grass
+
+# Vorschau, was HA senden würde, und Vergleich mit dem Plan im Mäher
+template:
+  - sensor:
+      - name: "Mähplan Einstellung"
+        unique_id: mgc_schedule_setting
+        icon: mdi:calendar-edit
+        state: >-
+          {% from 'mgc_mower_schedule.jinja' import mgc_schedule_entries, mgc_schedule_text %}
+          {{ mgc_schedule_text(mgc_schedule_entries() | from_json, 'de') | truncate(250, true, '…') }}
+      - name: "Mähplan im Mäher"
+        unique_id: mgc_schedule_on_mower
+        icon: mdi:robot-mower
+        availability: "{{ has_value('sensor.my_mower_mahplan') }}"
+        state: >-
+          {% from 'mgc_mower_schedule.jinja' import mgc_schedule_text %}
+          {{ mgc_schedule_text(state_attr('sensor.my_mower_mahplan', 'entries'), 'de') | truncate(250, true, '…') }}
+    binary_sensor:
+      # An = der Mäher hat genau den Plan aus dem Dashboard gespeichert
+      - name: "Mähplan übertragen"
+        unique_id: mgc_schedule_synced
+        icon: mdi:calendar-sync
+        availability: "{{ has_value('sensor.my_mower_mahplan') }}"
+        state: >-
+          {% from 'mgc_mower_schedule.jinja' import mgc_schedule_entries, mgc_schedule_key %}
+          {{ mgc_schedule_key(mgc_schedule_entries() | from_json)
+             == mgc_schedule_key(state_attr('sensor.my_mower_mahplan', 'entries')) }}
+
+# Sendet den Plan aus den Helfern an den Mäher (ersetzt den ganzen Plan im Mäher)
+script:
+  mgc_schedule_send:
+    alias: "Mähplan an den Mäher senden"
+    icon: mdi:send-clock
+    mode: queued
+    sequence:
+      - variables:
+          entries: >-
+            {% from 'mgc_mower_schedule.jinja' import mgc_schedule_entries %}
+            {{ mgc_schedule_entries() | from_json }}
+      - action: mgc_mower.set_mowing_schedule
+        target:
+          entity_id: lawn_mower.my_mower
+        data:
+          entries: "{{ entries }}"
+
+# Nach einer Änderung im Dashboard 15 s warten (auf weitere Änderungen), dann senden –
+# nur wenn der Plan im Mäher abweicht. Beim Start von HA wird nichts gesendet (Helfer werden wiederhergestellt).
+automation:
+  - id: mgc_schedule_send_after_change
+    alias: "MGC Mower: Mähplan nach Änderung senden"
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id:
+          - input_boolean.mgc_schedule_mon
+          - input_boolean.mgc_schedule_tue
+          - input_boolean.mgc_schedule_wed
+          - input_boolean.mgc_schedule_thu
+          - input_boolean.mgc_schedule_fri
+          - input_boolean.mgc_schedule_sat
+          - input_boolean.mgc_schedule_sun
+          - input_boolean.mgc_schedule_until_finished
+          - input_datetime.mgc_schedule_start
+          - input_datetime.mgc_schedule_end
+          - input_number.mgc_schedule_height
+    conditions:
+      - condition: template
+        value_template: >-
+          {{ trigger.from_state is not none
+             and trigger.from_state.state not in ['unknown', 'unavailable']
+             and trigger.to_state.state not in ['unknown', 'unavailable'] }}
+    actions:
+      - delay: 15
+      - condition: state
+        entity_id: binary_sensor.mahplan_ubertragen
+        state: "off"
+      - action: script.mgc_schedule_send

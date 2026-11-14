@@ -1,0 +1,271 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MGC Mower",
+        "description": "Configure your Handwise / Anthbot cloud account for MGC01 mowers.",
+        "data": {
+          "name": "Name",
+          "username": "Email / username",
+          "password": "Password",
+          "api_host": "API host",
+          "area_code": "Country",
+          "scan_interval": "Polling interval (seconds)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This account is already configured."
+    },
+    "error": {
+      "cannot_connect": "Could not connect or authenticate.",
+      "no_devices": "Login succeeded but no compatible devices were found.",
+      "unknown": "Unexpected error."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MGC Mower options",
+        "description": "When the mower reports an event code this integration does not know yet, Home Assistant shows a notification once per code. It asks you to report the code with a screenshot of the app message, so it can be added for everyone.",
+        "data": {
+          "notify_unknown_event_codes": "Notify about unknown event codes"
+        },
+        "data_description": {
+          "notify_unknown_event_codes": "Each unknown code is reported only once. Turn off if you do not want these notifications."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "mower_status": {
+        "name": "Mower status"
+      },
+      "battery_level": {
+        "name": "Battery level"
+      },
+      "cutting_height": {
+        "name": "Cutting height"
+      },
+      "mowing_area": {
+        "name": "Mowing area"
+      },
+      "mowing_progress": {
+        "name": "Mowing progress"
+      },
+      "wifi_signal": {
+        "name": "WiFi signal"
+      },
+      "error_code": {
+        "name": "Error code"
+      },
+      "event_code": {
+        "name": "Event code"
+      },
+      "ip_address": {
+        "name": "IP address"
+      },
+      "mode": {
+        "name": "Mode"
+      },
+      "mowing_schedule": {
+        "name": "Mowing schedule"
+      },
+      "pin_status": {
+        "name": "PIN status"
+      },
+      "rain_effect": {
+        "name": "Rain effect"
+      },
+      "mow_delay_time": {
+        "name": "Rain wait time"
+      },
+      "current_mow_passes": {
+        "name": "Current mow passes"
+      },
+      "map_time": {
+        "name": "Map time"
+      },
+      "last_path_update": {
+        "name": "Last path update"
+      },
+      "current_path_data": {
+        "name": "Current path data"
+      },
+      "firmware_ui_board": {
+        "name": "UI board firmware"
+      },
+      "firmware_motor_board": {
+        "name": "Motor board firmware"
+      },
+      "firmware_charger_station": {
+        "name": "Charger station firmware"
+      },
+      "firmware_position_board": {
+        "name": "Position board firmware"
+      }
+    },
+    "binary_sensor": {
+      "connection": {
+        "name": "Connection"
+      },
+      "charging": {
+        "name": "Charging"
+      },
+      "rain_detection": {
+        "name": "Rain detection"
+      },
+      "error": {
+        "name": "Error"
+      },
+      "safety_trigger": {
+        "name": "Safety trigger"
+      }
+    },
+    "button": {
+      "start_full_mow": {
+        "name": "Start mowing"
+      },
+      "pause_mow": {
+        "name": "Pause mowing"
+      },
+      "return_to_dock": {
+        "name": "Return to dock"
+      }
+    },
+    "number": {
+      "mow_height_setting": {
+        "name": "Mow height"
+      },
+      "rain_wait_time_setting": {
+        "name": "Rain wait time"
+      }
+    },
+    "switch": {
+      "rain_detection_enabled": {
+        "name": "Rain detection"
+      }
+    }
+  },
+  "services": {
+    "start_full_mow": {
+      "name": "Start full mow",
+      "description": "Start mowing on the selected mower(s).",
+      "fields": {
+        "serial_number": {
+          "name": "Serial number",
+          "description": "Optional mower serial number or list of serial numbers."
+        }
+      }
+    },
+    "stop_mow": {
+      "name": "Stop mow",
+      "description": "Stop all current tasks on the selected mower(s).",
+      "fields": {
+        "serial_number": {
+          "name": "Serial number",
+          "description": "Optional mower serial number or list of serial numbers."
+        }
+      }
+    },
+    "return_to_dock": {
+      "name": "Return to dock",
+      "description": "Send the selected mower(s) back to the charging dock.",
+      "fields": {
+        "serial_number": {
+          "name": "Serial number",
+          "description": "Optional mower serial number or list of serial numbers."
+        }
+      }
+    },
+    "set_mow_height": {
+      "name": "Set mow height",
+      "description": "Set the cutting height on the selected mower(s).",
+      "fields": {
+        "mow_height": {
+          "name": "Mow height",
+          "description": "Cutting height in millimeters."
+        },
+        "serial_number": {
+          "name": "Serial number",
+          "description": "Optional mower serial number or list of serial numbers."
+        }
+      }
+    },
+    "set_voice_volume": {
+      "name": "Set voice volume",
+      "description": "Set the voice volume on the selected mower(s), from 0 to 100.",
+      "fields": {
+        "voice_volume": {
+          "name": "Voice volume",
+          "description": "Volume level from 0 to 100."
+        },
+        "serial_number": {
+          "name": "Serial number",
+          "description": "Optional mower serial number or list of serial numbers."
+        }
+      }
+    },
+    "set_custom_mowing_direction": {
+      "name": "Set custom mowing direction",
+      "description": "Set a custom mowing direction and turn the adaptive direction on or off.",
+      "fields": {
+        "mow_direction": {
+          "name": "Mowing direction",
+          "description": "Direction in degrees (0 to 180)."
+        },
+        "enable_custom_direction": {
+          "name": "Enable custom direction",
+          "description": "Turn the custom mowing direction on or off."
+        },
+        "serial_number": {
+          "name": "Serial number",
+          "description": "Optional mower serial number or list of serial numbers."
+        }
+      }
+    },
+    "start_zone_mow": {
+      "name": "Start zone mow",
+      "description": "Start mowing one or more manual zones on the selected mower(s).",
+      "fields": {
+        "zones": {
+          "name": "Zones",
+          "description": "Zone id, zone name, comma-separated list, or YAML list of manual zones."
+        },
+        "serial_number": {
+          "name": "Serial number",
+          "description": "Optional mower serial number or list of serial numbers."
+        }
+      }
+    },
+    "start_auto_zone_mow": {
+      "name": "Start auto-zone mow",
+      "description": "Start mowing one or more auto-zones on the selected mower(s).",
+      "fields": {
+        "auto_zones": {
+          "name": "Auto zones",
+          "description": "Auto-zone id, name, comma-separated list, or YAML list of auto-zones."
+        },
+        "serial_number": {
+          "name": "Serial number",
+          "description": "Optional mower serial number or list of serial numbers."
+        }
+      }
+    },
+    "set_mowing_schedule": {
+      "name": "Set mowing schedule",
+      "description": "Replace the weekly mowing schedule stored on the mower (same as the schedule in the R HOME app). Every entry repeats weekly. An empty list clears the schedule. Tested with MGC mowers (Redkey MGC1000).",
+      "fields": {
+        "entries": {
+          "name": "Entries",
+          "description": "List of schedule entries. Each entry has weekday (mon-sun) or weekdays (list), start (HH:MM), optional end (HH:MM, empty = until finished), cutter_height (30-70 mm in 5 mm steps) and direction (perpendicular, parallel or cross)."
+        },
+        "serial_number": {
+          "name": "Serial number",
+          "description": "Optional mower serial number or list of serial numbers."
+        }
+      }
+    }
+  }
+}

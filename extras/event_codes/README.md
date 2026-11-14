@@ -5,7 +5,7 @@ text in the **Message Center**. The cloud list `device/v2/code/list` stays empty
 (`message/code/translate`, codes 1000–2155) does not cover these values. No other project (ioBroker anthbot adapters,
 ha-anthbot-map-v2, handwise-ha) maps them – they only show the raw number.
 
-Entity in this integration: `sensor.<name>_event_code` (diagnostic).
+Entity in this integration: `sensor.<name>_event_code` (diagnostic). Since 0.3.0 its attribute `description` shows the app text below and `known` tells whether the code is in the table (`custom_components/mgc_mower/event_codes.py`).
 
 ## Known values (Redkey MGC1000, firmware ui_board 0.3.5)
 
@@ -34,6 +34,6 @@ last one): "Device is paused", "Mower is not started on the dock or boundary wir
 3. Screenshot the list (`screenshots/02…04`). App times are local time.
 4. Match each app message with a change of `event_code` in the HA history: the change appears 0–4 min **after** the
    app time (polling interval 240 s). Several messages within a few seconds → only the last one is visible.
-5. Please report new values as an issue in this repository.
+5. Please report new values with the issue form [Unknown event code](https://github.com/dktzde/ha-mgc-mower/issues/new?template=unknown_event_code.yml). Since 0.3.0 Home Assistant also shows a notification with a pre-filled link when the mower reports an unknown code (can be turned off in the integration options).
 
 Screenshots: R HOME app, anonymised (no account, serial number or location visible).

@@ -13,6 +13,10 @@ CONF_PASSWORD = "password"
 CONF_AREA_CODE = "area_code"
 CONF_SCAN_INTERVAL = "scan_interval"
 
+# Option: notify once about each unknown event_code (asks the user to report it).
+CONF_NOTIFY_UNKNOWN_EVENT_CODES = "notify_unknown_event_codes"
+DEFAULT_NOTIFY_UNKNOWN_EVENT_CODES = True
+
 DEFAULT_NAME = "MGC Mower"
 DEFAULT_API_HOST = "api.anthbot.com"
 DEFAULT_AREA_CODE = "32"

@@ -34,9 +34,13 @@ Then: *Settings → Devices & services → Add integration → MGC Mower* and si
 - Writing the weekly mowing schedule (`mgc_mower.set_mowing_schedule`)
 - Everything from Handwise-HA: start, pause, dock, battery, status, progress, cutting height, zones, diagnostics …
 
-**Example dashboard:** control, rain settings and a weekly mowing schedule with a few taps, see [extras/dashboard](extras/dashboard/).
+**Example dashboard:** control, rain settings and a weekly mowing schedule with a few taps, in English, French and German, see [extras/dashboard](extras/dashboard/).
 
-**Event codes:** what the values of the `Event code` sensor mean (app Message Center), with a how-to for reading your own, see [extras/event_codes](extras/event_codes/).
+**Event codes:** what the values of the `Event code` sensor mean (app Message Center), with a how-to for reading your own, see [extras/event_codes](extras/event_codes/). The sensor shows the app text as attribute `description`.
+
+**Unknown event codes – please help:** when your mower reports a code the integration does not know yet, Home Assistant shows a notification (once per code). It links to a pre-filled issue: just add a screenshot of the app message, or copy its text. You can turn this off in the integration options (*Settings → Devices & services → MGC Mower → Configure*); it is on by default. The link contains no serial number, IP address or account data.
+
+**Languages:** English, French and German.
 
 **To do**
 - The message centre can't be read yet
@@ -101,9 +105,13 @@ Ensuite : *Paramètres → Appareils et services → Ajouter une intégration �
 - Écriture du planning de tonte hebdomadaire (`mgc_mower.set_mowing_schedule`, exemple voir [English](#english))
 - Tout ce que fait Handwise-HA : démarrage, pause, retour à la base, batterie, état, progression, hauteur de coupe, zones, diagnostic …
 
-**Tableau de bord d'exemple :** commande, réglages pluie et planning hebdomadaire en quelques clics, voir [extras/dashboard](extras/dashboard/) (en anglais).
+**Tableau de bord d'exemple :** commande, réglages pluie et planning hebdomadaire en quelques clics, en français, anglais et allemand, voir [extras/dashboard](extras/dashboard/).
 
-**Codes d'événement :** signification des valeurs du capteur `Event code` (centre de messages de l'app), avec une méthode pour lire les vôtres, voir [extras/event_codes](extras/event_codes/) (en anglais).
+**Codes d'événement :** signification des valeurs du capteur `Code d'événement` (centre de messages de l'app), avec une méthode pour lire les vôtres, voir [extras/event_codes](extras/event_codes/) (en anglais). Le capteur affiche le texte de l'app dans l'attribut `description`.
+
+**Codes d'événement inconnus – aidez-nous :** quand votre tondeuse signale un code que l'intégration ne connaît pas encore, Home Assistant affiche une notification (une fois par code). Elle renvoie vers un ticket pré-rempli : ajoutez simplement une capture d'écran du message de l'app, ou recopiez son texte. Désactivable dans les options de l'intégration (*Paramètres → Appareils et services → MGC Mower → Configurer*) ; activé par défaut. Le lien ne contient ni numéro de série, ni adresse IP, ni données de compte.
+
+**Langues :** français, anglais et allemand.
 
 **À faire**
 - Le centre de messages ne peut pas encore être lu
@@ -155,9 +163,13 @@ Danach: *Einstellungen → Geräte & Dienste → Integration hinzufügen → MGC
 - Wochen-Mähplan schreiben (`mgc_mower.set_mowing_schedule`, Beispiel siehe [English](#english))
 - Alles aus Handwise-HA: Start, Pause, Zurück zur Station, Akku, Status, Fortschritt, Schnitthöhe, Zonen, Diagnose …
 
-**Beispiel-Dashboard:** Steuerung, Regen-Einstellungen und Wochen-Mähplan mit ein paar Klicks, siehe [extras/dashboard](extras/dashboard/) (englisch).
+**Beispiel-Dashboard:** Steuerung, Regen-Einstellungen und Wochen-Mähplan mit ein paar Klicks, auf Deutsch, Englisch und Französisch, siehe [extras/dashboard](extras/dashboard/).
 
-**Event-Codes:** Bedeutung der Werte des Sensors `Event code` (Message Center der App) und Anleitung zum Auslesen der eigenen, siehe [extras/event_codes](extras/event_codes/) (englisch).
+**Event-Codes:** Bedeutung der Werte des Sensors `Ereigniscode` (Message Center der App) und Anleitung zum Auslesen der eigenen, siehe [extras/event_codes](extras/event_codes/) (englisch). Der Sensor zeigt den App-Text im Attribut `description`.
+
+**Unbekannte Ereigniscodes – bitte mithelfen:** Meldet dein Mäher einen Code, den die Integration noch nicht kennt, zeigt Home Assistant eine Benachrichtigung (einmal je Code). Sie verlinkt ein vorausgefülltes Issue: nur noch einen Screenshot der App-Meldung anhängen oder ihren Text abschreiben. Abschaltbar in den Optionen der Integration (*Einstellungen → Geräte & Dienste → MGC Mower → Konfigurieren*), standardmäßig an. Der Link enthält keine Seriennummer, IP-Adresse oder Kontodaten.
+
+**Sprachen:** Deutsch, Englisch und Französisch.
 
 **Noch offen**
 - Das Message Center kann noch nicht ausgelesen werden
