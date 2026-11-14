@@ -14,6 +14,7 @@ from homeassistant.exceptions import ConfigEntryNotReady, ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers import entity_registry as er
+from homeassistant.loader import async_get_integration
 
 from .api import HandwiseCloudApiClient, HandwiseGenieApiError, HandwiseShadowApiClient
 from .const import (
@@ -45,6 +46,7 @@ from .const import (
     SERVICE_STOP_MOW,
 )
 from .coordinator import HandwiseGenieDataUpdateCoordinator
+from .event_notice import UnknownEventCodeWatcher, async_get_notified_event_codes
 from .schedule import (
     DIRECTIONS,
     MAX_CUTTER_HEIGHT,
@@ -658,7 +660,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinators
     await _async_register_services(hass)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    await _async_watch_event_codes(hass, entry, coordinators)
     return True
+
+
+async def _async_watch_event_codes(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    coordinators: list[HandwiseGenieDataUpdateCoordinator],
+) -> None:
+    """Notify once about each unknown event_code (can be turned off in the options)."""
+    notified = await async_get_notified_event_codes(hass)
+    integration = await async_get_integration(hass, DOMAIN)
+    version = str(integration.version or "unknown")
+    for coordinator in coordinators:
+        watcher = UnknownEventCodeWatcher(hass, entry, coordinator, notified, version)
+        entry.async_on_unload(coordinator.async_add_listener(watcher.async_check))
+        watcher.async_check()
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
