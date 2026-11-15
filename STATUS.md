@@ -2,19 +2,19 @@
 
 Read this first, and update it after every step, so the next session can continue without the chat history.
 
-Last updated: 2026-11-15 08:56 (issue link from the notification tested)
+Last updated: 2026-11-15 08:57 (options switch tested)
 
 ## Current state
 
 - **0.2.2** published 2026-11-14 18:55 (CET): connection = `online` and not `shutdown` and the mower answers; one `get_all_props` request when the last report is older than 6 h.
 - **0.3.0** pre-release published 2026-11-14 20:41 (CET), PR #18 (two CodeRabbit rounds, the second without findings): unknown `event_code` → one Home Assistant notification per code with a pre-filled issue link (form `.github/ISSUE_TEMPLATE/unknown_event_code.yml`, label `event code`); option to turn it off (on by default); attributes `description` and `known` on the event code sensor; translations en/de/fr (entities, options, services); example dashboard and schedule package in German and French.
-- **On the device (Redkey MGC1000):** 0.3.0 installed from HACS (beta versions on for this repository) + debug patch `extras/shadow_capture`, HA restarted 2026-11-14 20:42. **Checked 2026-11-14 20:44–20:50:** starts without errors in the log, 244 known again (`known: true`, `description` = app text) and no new notification, options flow shows the switch (on), all 33 entities present with German names and unchanged entity IDs, `capture_shadow` registered, issue form on `main`. Earlier test with the branch code (19:12–19:14, 244 taken out of the table): notification appears once, log warning, codes kept in `.storage/mgc_mower.unknown_event_codes`, options off/on saved without reload. **Checked by the user 2026-11-15:** the issue link in the notification opens the filled-in form. **Not checked yet:** options switch in the UI; a real unknown code while the option is off (covered by an offline test).
+- **On the device (Redkey MGC1000):** 0.3.0 installed from HACS (beta versions on for this repository) + debug patch `extras/shadow_capture`, HA restarted 2026-11-14 20:42. **Checked 2026-11-14 20:44–20:50:** starts without errors in the log, 244 known again (`known: true`, `description` = app text) and no new notification, options flow shows the switch (on), all 33 entities present with German names and unchanged entity IDs, `capture_shadow` registered, issue form on `main`. Earlier test with the branch code (19:12–19:14, 244 taken out of the table): notification appears once, log warning, codes kept in `.storage/mgc_mower.unknown_event_codes`, options off/on saved without reload. **Checked by the user 2026-11-15:** the issue link in the notification opens the filled-in form; the options switch is shown and on. **Not checked yet:** a real unknown code while the option is off (covered by an offline test).
 - PR #14 parts on the device since 2026-11-14 19:09. **Not checked yet:** mower off → disconnected at `shutdown`; without power → after 6 h; on → connected again.
 - **Event codes:** meaning of `event_code` collected from the app Message Center, see `extras/event_codes/` (2026-11-12). Code 3 still unknown.
 
 ## Next steps
 
-1. Check the options switch in the UI. Then 0.3.0 can become a normal release.
+1. Make 0.3.0 a normal release (after the user agrees).
 2. Test PR #14 on the device (mower off / without power / on).
 3. Port 7789 on the mower sends a binary stream (header `AA AA`) without request. Record it read-only while the mower changes state and compare with the shadow – maybe a local status without cloud.
 
