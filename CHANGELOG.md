@@ -6,6 +6,10 @@ Dates are release dates (YYYY-MM-DD).
 
 ## MGC Mower, maintained by [dktzde](https://github.com/dktzde) (from 0.2.0)
 
+### Unreleased
+
+- **Fixed:** the mowing progress sensor showed 200 % (or 101 %) after a run. The MGC firmware uses `mowing_progress` as a status marker once the mower is back at the dock (100 when returning, 200 while charging). Values above 100 are now shown as 100 %; the raw value is kept in the new `raw_progress` attribute. Missing, non-numeric or negative values make the sensor unknown.
+
 ### 0.3.0 – 2026-11-14
 
 - **Added:** notification for unknown event codes. When the mower reports an `event_code` the integration does not know yet, Home Assistant shows a notification once per code (English, French or German). It links to a pre-filled GitHub issue (code, previous code, mode, model, firmware, versions; no serial number, IP address or account data) and asks for a screenshot or the text of the app message. Can be turned off in the integration options; on by default.
