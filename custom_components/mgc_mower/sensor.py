@@ -133,6 +133,26 @@ def _pin_status(data: dict[str, Any]) -> str | None:
     return None
 
 
+def _mowing_progress(data: dict[str, Any]) -> float | None:
+    """Return the mowing progress in percent (0-100).
+
+    The MGC firmware reuses `mowing_progress` as a status marker after a run:
+    100 when it returns to the dock, 200 while charging (101 was seen too).
+    Values above 100 are shown as 100 %; the raw value is kept in the
+    `raw_progress` attribute. Missing, non-numeric or negative values give None.
+    """
+    value = data.get("mowing_progress")
+    if isinstance(value, bool) or value is None:
+        return None
+    try:
+        progress = float(value)
+    except (TypeError, ValueError):
+        return None
+    if progress < 0 or progress != progress:  # negative or NaN
+        return None
+    return min(progress, 100.0)
+
+
 def _firmware_value(data: dict[str, Any], key: str) -> str | None:
     """Return firmware sub-version."""
     fw_version = data.get("fw_version")
@@ -191,7 +211,7 @@ SENSORS: tuple[HandwiseSensorDescription, ...] = (
         name="Mowing progress",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: data.get("mowing_progress"),
+        value_fn=_mowing_progress,
     ),
     HandwiseSensorDescription(
         key="wifi_signal",
@@ -400,6 +420,9 @@ class HandwiseSensorEntity(
 
         if key == "mower_status":
             attributes["robot_status_raw"] = _raw_robot_status(state)
+
+        elif key == "mowing_progress":
+            attributes["raw_progress"] = state.get("mowing_progress")
 
         elif key == "current_path_data":
             curpath = state.get("curpath")
