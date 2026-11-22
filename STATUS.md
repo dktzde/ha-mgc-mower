@@ -2,7 +2,7 @@
 
 Read this first, and update it after every step, so the next session can continue without the chat history.
 
-Last updated: 2026-11-20 06:40 (0.3.1 pre-release)
+Last updated: 2026-11-22 (README rework, Redkey logo as SVG)
 
 ## Current state
 
@@ -10,8 +10,9 @@ Last updated: 2026-11-20 06:40 (0.3.1 pre-release)
 - **0.3.0** pre-release published 2026-11-14 20:41 (CET), PR #18 (two CodeRabbit rounds, the second without findings): unknown `event_code` → one Home Assistant notification per code with a pre-filled issue link (form `.github/ISSUE_TEMPLATE/unknown_event_code.yml`, label `event code`); option to turn it off (on by default); attributes `description` and `known` on the event code sensor; translations en/de/fr (entities, options, services); example dashboard and schedule package in German and French.
 - **On the device (Redkey MGC1000):** 0.3.0 installed from HACS (beta versions on for this repository) + debug patch `extras/shadow_capture`, HA restarted 2026-11-14 20:42. **Checked 2026-11-14 20:44–20:50:** starts without errors in the log, 244 known again (`known: true`, `description` = app text) and no new notification, options flow shows the switch (on), all 33 entities present with German names and unchanged entity IDs, `capture_shadow` registered, issue form on `main`. Earlier test with the branch code (19:12–19:14, 244 taken out of the table): notification appears once, log warning, codes kept in `.storage/mgc_mower.unknown_event_codes`, options off/on saved without reload. **Checked by the user 2026-11-15:** the issue link in the notification opens the filled-in form; the options switch is shown and on. **Not checked yet:** a real unknown code while the option is off (covered by an offline test).
 - PR #14 parts on the device since 2026-11-14 19:09. **Not checked yet:** mower off → disconnected at `shutdown`; without power → after 6 h; on → connected again.
-- **HACS preparation (2026-11-19):** repository topics set; workflow `.github/workflows/validate.yml` (HACS action + hassfest) added in PR #22, both green (`domains` removed from `hacs.json`, `manifest.json` keys sorted); dashboard screenshot in the README (PR #23). Still a fork, 0.3.0 still a pre-release, no PR to `hacs/default` yet (maintainer's decision).
+- **HACS preparation (2026-11-19):** repository topics set; workflow `.github/workflows/validate.yml` (HACS action + hassfest) added in PR #22, both green; split on 2026-11-22 into `hassfest.yml` and `hacs.yml` (daily, README badges) (`domains` removed from `hacs.json`, `manifest.json` keys sorted); dashboard screenshot in the README (PR #23). Still a fork, 0.3.0 still a pre-release, no PR to `hacs/default` yet (maintainer's decision).
 - **0.3.1** pre-release published 2026-11-20 06:39 (CET), PR #26: PR #24 – mowing progress capped at 100 % (firmware reports 100 when returning and 200 while charging after a run), raw value in attribute `raw_progress`. **On the device:** file copied into the installation 2026-11-19 22:07, config entry reloaded – not active yet (module still loaded), takes effect after the next Home Assistant restart. **Not checked yet:** sensor shows 100 and `raw_progress` 200.
+- **README rework (2026-11-22):** badges, "why install it", full entity list, request for stars and issues, screenshot in every language section (only a German-UI screenshot exists), installation with My Home Assistant buttons, history with dates and thanks to MTTPoll at the end. Redkey wordmark redrawn as `images/redkey.svg` (dark on light, white in dark mode); brand folder: `logo`/`dark_logo` (+ `@2x`) = Redkey wordmark rendered from the SVG, Handwise icon 512 px moved to `icon@2x.png`. **Not checked yet:** how Home Assistant shows the new brand logo.
 - **Event codes:** meaning of `event_code` collected from the app Message Center, see `extras/event_codes/` (2026-11-12). Code 3 still unknown.
 
 ## Next steps
@@ -50,3 +51,5 @@ Last updated: 2026-11-20 06:40 (0.3.1 pre-release)
 - `extras/shadow_capture/` – debug patch (`mgc_mower.capture_shadow`), not installed by HACS
 - `extras/dashboard/` – example dashboard with weekly schedule editor (en, de, fr)
 - `extras/event_codes/` – event code table, how-to, app screenshots
+- `images/redkey.svg` – Redkey wordmark (source for the brand PNGs, rendered with `rsvg-convert -h 128/256`)
+- `.github/workflows/hassfest.yml`, `hacs.yml` – validation, daily
