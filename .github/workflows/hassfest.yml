@@ -1,4 +1,8 @@
-name: Validate
+# Checks the integration with hassfest, the validator Home Assistant uses for
+# its own integrations. Runs on every push to main, on pull requests and once
+# a day, so a change in Home Assistant that breaks the integration shows up
+# early (and in the README badge).
+name: Hassfest
 
 on:
   push:
@@ -6,22 +10,13 @@ on:
       - main
   pull_request:
   schedule:
-    - cron: "17 4 * * 1"
+    - cron: "17 4 * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  hacs:
-    name: HACS validation
-    runs-on: ubuntu-latest
-    steps:
-      - name: HACS validation
-        uses: hacs/action@main
-        with:
-          category: integration
-
   hassfest:
     name: Hassfest validation
     runs-on: ubuntu-latest
