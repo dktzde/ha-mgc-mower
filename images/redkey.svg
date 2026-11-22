@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 177 46" width="177" height="46">
+<title>Redkey</title>
+<style>.f{fill:#1d1d1f}.s{fill:none;stroke:#1d1d1f;stroke-width:3.9}@media (prefers-color-scheme:dark){.f{fill:#ffffff}.s{stroke:#ffffff}}</style>
+<rect class="f" x="0" y="18.05" width="3.9" height="23.20"/>
+<path class="s" d="M0 1.95H18.5A9.5 9.025 0 0 1 18.5 20H0"/>
+<path class="f" d="M8.34 18.00 L13.16 18.00 L29.95 41.25 L25.13 41.25Z"/>
+<path class="s" d="M56.12 26.50A12.875 12.875 0 1 0 54.05 33.51"/>
+<rect class="f" x="36.00" y="24.65" width="22.07" height="3.9"/>
+<circle class="s" cx="76" cy="26.5" r="12.875"/>
+<rect class="f" x="87.2" y="0" width="3.9" height="41.25"/>
+<rect class="f" x="94.3" y="0" width="3.9" height="41.25"/>
+<path class="f" d="M116.75 11.50 L123.75 11.50 L96.20 30.37 L96.20 25.70Z"/>
+<path class="f" d="M99.20 24.12 L105.00 24.12 L124.27 41.25 L118.41 41.25Z"/>
+<path class="s" d="M146.88 26.50A12.875 12.875 0 1 0 144.80 33.51"/>
+<rect class="f" x="126.75" y="24.65" width="22.07" height="3.9"/>
+<path class="f" d="M146.81 11.50 L151.19 11.50 L160.47 30.05 L157.89 33.66Z"/>
+<path class="f" d="M171.31 11.50 L176.11 11.50 L151.77 45.60 L146.97 45.60Z"/>
+</svg>

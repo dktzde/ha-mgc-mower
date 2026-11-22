@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/redkey.png" alt="Redkey" height="60">
+  <img src="images/redkey.svg" alt="Redkey" height="60">
   &nbsp;&nbsp;
   <img src="custom_components/mgc_mower/brand/icon.png" alt="Handwise" height="60">
 </p>
